@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftAIDev - Software Consulting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f4f7fa 0%, #e3e9f7 100%);
+            color: #222;
+        }
+        header {
+            background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%);
+            color: #fff;
+            padding: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-img {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+            filter: brightness(0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 2.5rem 0 2rem 0;
+        }
+        nav {
+            background: #283593;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 8px #0001;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 1.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #ffd600;
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+        .section-title {
+            color: #1a237e;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .product {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .product:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 8px 32px #0003;
+        }
+        .product img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+        .contact {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 2.5rem 2rem;
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+        .team-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            align-items: stretch;
+        }
+        .team-member {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            width: 260px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .team-member:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 8px 32px #0003;
+        }
+        .team-member img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 4px solid #1a237e;
+        }
+        .blog-article {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .blog-article h3 {
+            margin-top: 0;
+        }
+        .blog-article p {
+            color: #555;
+            font-size: 1em;
+        }
+        .testimonial-block {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin: 0 auto;
+            max-width: 700px;
+        }
+        blockquote {
+            font-size: 1.2em;
+            color: #333;
+            background: #f9f9fc;
+            border-left: 5px solid #1a237e;
+            padding: 1.5rem 2rem;
+            margin: 0 auto;
+            max-width: 700px;
+        }
+        footer {
+            background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%);
+            color: #fff;
+            text-align: center;
+            padding: 1.5rem 0 1rem 0;
+            margin-top: 2rem;
+            font-size: 1.1em;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 900px) {
+            .products, .team-row { flex-direction: column; align-items: center; }
+        }
+        @media (max-width: 700px) {
+            .container { padding: 0 0.5rem; }
+            .products, .team-row { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="hero-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Business Team">
+        <div class="hero-content">
+            <h1 style="color:#fff;">SoftAIDev</h1>
+            <p style="color:#e3e3e3;">Expert Software Consulting & Solutions</p>
+        </div>
+    </header>
+    <nav>
+        <a href="#products">Products</a>
+        <a href="#team">Team</a>
+        <a href="#blog">Blog</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <div class="container">
+        <section id="products">
+            <h2 class="section-title">Our Products & Services</h2>
+            <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1000&q=80" alt="Software Development" style="width:100%;max-width:900px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <div class="products">
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/source-code.png" alt="Custom Software">
+                    <h3>Custom Software Development</h3>
+                    <p>Tailored solutions for your business needs, from web apps to enterprise systems.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/consultation.png" alt="Consulting">
+                    <h3>IT Consulting</h3>
+                    <p>Expert advice to optimize your technology strategy and drive innovation.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/cloud.png" alt="Cloud Solutions">
+                    <h3>Cloud Solutions</h3>
+                    <p>Modernize your infrastructure with secure, scalable cloud services.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/training.png" alt="Training">
+                    <h3>Technical Training</h3>
+                    <p>Empower your team with hands-on training in the latest technologies.</p>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:2rem;">
+                <span style="background:#ffd600;color:#1a237e;padding:0.8rem 2rem;border-radius:6px;font-weight:bold;box-shadow:0 2px 8px #0001;">Find <span style="text-decoration:underline;">SoftAIDev</span> in the Amazon Store</span>
+            </div>
+        </section>
+        <section id="testimonial" style="margin:3rem 0;">
+            <h2 class="section-title">Testimonial</h2>
+            <img src="https://images.unsplash.com/photo-1515168833906-d2a3b82b302b?auto=format&fit=crop&w=700&q=80" alt="Happy Client" style="width:100%;max-width:400px;display:block;margin:0 auto 1.5rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <div class="testimonial-block">
+                <blockquote>
+                    “Softaidev delivered a flawless cross-platform app that works seamlessly on every device. Their innovative approach, attention to detail, and commitment to client success make them a partner we’re excited to recommend to anyone looking to grow their business.”
+                </blockquote>
+            </div>
+        </section>
+        <section id="team" style="margin:3rem 0;">
+            <h2 class="section-title">Meet the Team</h2>
+            <div class="team-row">
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Reggie Washington">
+                    <h3 style="margin:0.5rem 0 0.2rem 0;">Reggie Washington</h3>
+                    <p style="color:#1a237e;font-weight:bold;margin:0 0 0.5rem 0;">President</p>
+                    <p>Visionary leader and founder of SoftAIDev, Reggie brings over 15 years of experience in software consulting and business innovation.</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Your Photo">
+                    <h3 style="margin:0.5rem 0 0.2rem 0;">Your Name</h3>
+                    <p style="color:#1a237e;font-weight:bold;margin:0 0 0.5rem 0;">Team Member</p>
+                    <p>Dedicated to delivering client success, with a passion for technology and creative problem-solving. (Replace with your bio and photo!)</p>
+                </div>
+            </div>
+        </section>
+        <section id="blog" style="margin:3rem 0;">
+            <h2 class="section-title">Blog & News</h2>
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80" alt="Business News" style="width:100%;max-width:600px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <article class="blog-article">
+                <h3>SoftAIDev Launches New Client Portal</h3>
+                <p style="color:#555;font-size:0.95em;">August 9, 2025</p>
+                <p>We are excited to announce the launch of our new client portal, designed to streamline project collaboration and provide real-time updates for our valued partners. Stay tuned for more updates and features!</p>
+            </article>
+            <!-- Add more blog posts here as needed -->
+        </section>
+        <section id="contact">
+            <h2 class="section-title">Contact Us</h2>
+            <img src="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=900&q=80" alt="Contact Business" style="width:100%;max-width:500px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <div class="contact">
+                <p>Ready to elevate your business with expert software solutions?</p>
+                <form>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name" required style="width:100%;margin-bottom:1rem;"><br>
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" required style="width:100%;margin-bottom:1rem;"><br>
+                    <label for="message">Message:</label><br>
+                    <textarea id="message" name="message" rows="4" required style="width:100%;margin-bottom:1rem;"></textarea><br>
+                    <button type="submit" style="background:#1a237e;color:#fff;padding:0.5rem 2rem;border:none;border-radius:4px;">Send</button>
+                </form>
+                <div style="margin-top:1.5rem;font-size:0.95em;color:#555;">
+                    <p>President: Reggie Washington</p>
+                    <p>Phone: <a href="tel:3609721924" style="color:#1a237e;">360-972-1924</a></p>
+                    <p>Email: <a href="mailto:customersupport@softaidev.com" style="color:#1a237e;">customersupport@softaidev.com</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        &copy; 2025 SoftAIDev. All rights reserved.<br>
+        <span style="font-size:0.95em;">Connect with us for your next project!</span>
+    </footer>
+</body>
+</html>
+        <section id="team" style="margin:3rem 0;">
+            <h2 class="section-title">Meet the Team</h2>
+            <div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;align-items:stretch;">
+                <div style="background:#fff;border-radius:8px;box-shadow:0 2px 8px #0001;padding:1.5rem;width:260px;text-align:center;display:flex;flex-direction:column;align-items:center;">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Reggie Washington" style="width:110px;height:110px;object-fit:cover;border-radius:50%;margin-bottom:1rem;border:4px solid #1a237e;">
+                    <h3 style="margin:0.5rem 0 0.2rem 0;">Reggie Washington</h3>
+                    <p style="color:#1a237e;font-weight:bold;margin:0 0 0.5rem 0;">President</p>
+                    <p>Visionary leader and founder of SoftAIDev, Reggie brings over 15 years of experience in software consulting and business innovation.</p>
+                </div>
+                <div style="background:#fff;border-radius:8px;box-shadow:0 2px 8px #0001;padding:1.5rem;width:260px;text-align:center;display:flex;flex-direction:column;align-items:center;">
+                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Your Photo" style="width:110px;height:110px;object-fit:cover;border-radius:50%;margin-bottom:1rem;border:4px solid #1a237e;">
+                    <h3 style="margin:0.5rem 0 0.2rem 0;">Your Name</h3>
+                    <p style="color:#1a237e;font-weight:bold;margin:0 0 0.5rem 0;">Team Member</p>
+                    <p>Dedicated to delivering client success, with a passion for technology and creative problem-solving. (Replace with your bio and photo!)</p>
+                </div>
+            </div>
+        </section>
+        <section id="blog" style="margin:3rem 0;">
+            <h2 class="section-title">Blog & News</h2>
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80" alt="Business News" style="width:100%;max-width:600px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <article style="background:#fff;border-radius:8px;box-shadow:0 2px 8px #0001;padding:1.5rem;margin-bottom:1.5rem;max-width:700px;margin-left:auto;margin-right:auto;">
+                <h3 style="margin-top:0;">SoftAIDev Launches New Client Portal</h3>
+                <p style="color:#555;font-size:0.95em;">August 9, 2025</p>
+                <p>We are excited to announce the launch of our new client portal, designed to streamline project collaboration and provide real-time updates for our valued partners. Stay tuned for more updates and features!</p>
+            </article>
+            <!-- Add more blog posts here as needed -->
+        </section>
+</head>
+<body>
+    <header style="position:relative;">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Business Team" style="width:100%;max-height:320px;object-fit:cover;filter:brightness(0.6);position:absolute;top:0;left:0;z-index:0;">
+        <div style="position:relative;z-index:1;padding:2rem 0;">
+            <h1 style="color:#fff;">SoftAIDev</h1>
+            <p style="color:#e3e3e3;">Expert Software Consulting & Solutions</p>
+        </div>
+    </header>
+    <nav>
+        <a href="#products">Products</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <div class="container">
+        <section id="products">
+            <h2 class="section-title">Our Products & Services</h2>
+            <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1000&q=80" alt="Software Development" style="width:100%;max-width:900px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <div class="products">
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/source-code.png" alt="Custom Software">
+                    <h3>Custom Software Development</h3>
+                    <p>Tailored solutions for your business needs, from web apps to enterprise systems.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/consultation.png" alt="Consulting">
+                    <h3>IT Consulting</h3>
+                    <p>Expert advice to optimize your technology strategy and drive innovation.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/cloud.png" alt="Cloud Solutions">
+                    <h3>Cloud Solutions</h3>
+                    <p>Modernize your infrastructure with secure, scalable cloud services.</p>
+                </div>
+                <div class="product">
+                    <img src="https://img.icons8.com/color/96/000000/training.png" alt="Training">
+                    <h3>Technical Training</h3>
+                    <p>Empower your team with hands-on training in the latest technologies.</p>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:2rem;">
+                <span style="background:#ffd600;color:#1a237e;padding:0.8rem 2rem;border-radius:6px;font-weight:bold;box-shadow:0 2px 8px #0001;">Find <span style="text-decoration:underline;">SoftAIDev</span> in the Amazon Store</span>
+            </div>
+        <section id="testimonial" style="margin:3rem 0;">
+            <h2 class="section-title">Testimonial</h2>
+            <img src="https://images.unsplash.com/photo-1515168833906-d2a3b82b302b?auto=format&fit=crop&w=700&q=80" alt="Happy Client" style="width:100%;max-width:400px;display:block;margin:0 auto 1.5rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <blockquote style="font-size:1.2em;color:#333;background:#f9f9fc;border-left:5px solid #1a237e;padding:1.5rem 2rem;margin:0 auto;max-width:700px;">
+                “Softaidev delivered a flawless cross-platform app that works seamlessly on every device. Their innovative approach, attention to detail, and commitment to client success make them a partner we’re excited to recommend to anyone looking to grow their business.”
+            </blockquote>
+        </section>
+        </section>
+        <section id="contact">
+            <h2 class="section-title">Contact Us</h2>
+            <img src="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=900&q=80" alt="Contact Business" style="width:100%;max-width:500px;display:block;margin:0 auto 2rem auto;border-radius:10px;box-shadow:0 2px 8px #0002;">
+            <div class="contact">
+                <p>Ready to elevate your business with expert software solutions?</p>
+                <form>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name" required style="width:100%;margin-bottom:1rem;"><br>
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" required style="width:100%;margin-bottom:1rem;"><br>
+                    <label for="message">Message:</label><br>
+                    <textarea id="message" name="message" rows="4" required style="width:100%;margin-bottom:1rem;"></textarea><br>
+                    <button type="submit" style="background:#1a237e;color:#fff;padding:0.5rem 2rem;border:none;border-radius:4px;">Send</button>
+                </form>
+                <div style="margin-top:1.5rem;font-size:0.95em;color:#555;">
+                    <p>President: Reggie Washington</p>
+                    <p>Phone: <a href="tel:3609721924" style="color:#1a237e;">360-972-1924</a></p>
+                    <p>Email: <a href="mailto:customersupport@softaidev.com" style="color:#1a237e;">customersupport@softaidev.com</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        &copy; 2025 SoftAIDev. All rights reserved.<br>
+        <span style="font-size:0.95em;">Connect with us for your next project!</span>
+    </footer>
+</body>
+</html>
