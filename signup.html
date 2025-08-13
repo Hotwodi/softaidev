@@ -13,6 +13,8 @@
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative; /* ensure it stacks above decorative imgs */
+            z-index: 1;
         }
         .auth-form {
             display: flex;
@@ -61,9 +63,32 @@
             margin: 10px 0;
             padding-left: 20px;
         }
+        /* Decorative images */
+        .decor-sphinx, .decor-pyramids {
+            position: fixed;
+            z-index: 0;
+            pointer-events: none; /* do not block clicks */
+            opacity: 0.15;
+            user-select: none;
+        }
+        .decor-sphinx {
+            top: 12px;
+            right: 12px;
+            width: 160px;
+            max-width: 22vw;
+        }
+        .decor-pyramids {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            max-width: 85vw;
+        }
     </style>
 </head>
 <body>
+    <img class="decor-sphinx" src="https://images.unsplash.com/photo-1544986581-efac024faf62?auto=format&fit=crop&w=600&q=80" alt="The Great Sphinx of Giza decorative image" />
+    <img class="decor-pyramids" src="https://images.unsplash.com/photo-1542556391-0f2b4aa1b8f5?auto=format&fit=crop&w=1200&q=80" alt="Three pyramids decorative image" />
     <div class="auth-container">
         <h2>Create Your Account</h2>
         <div class="benefits">
