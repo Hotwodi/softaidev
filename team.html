@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team - SoftAIDev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Montserrat', Arial, sans-serif; margin:0; background:#f6f8fb; color:#222; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    nav { background:#1a237e; position: sticky; top: 0; z-index: 1000; }
+    nav .inner { display:flex; gap:1rem; align-items:center; justify-content:space-between; padding:1rem 2rem; max-width:1200px; margin:0 auto; }
+    nav a { color:#fff; text-decoration:none; font-weight:600; }
+    nav .links a { padding: .5rem 1rem; border-radius:4px; }
+    header { background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%); color:#fff; padding:3rem 0; text-align:center; }
+    h1 { margin:0 0 .5rem 0; }
+    .members { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-top:1.5rem; }
+    .card { background:#fff; border-radius:10px; padding:1rem; box-shadow:0 2px 8px #0002; text-align:center; }
+    .avatar { width:96px; height:96px; border-radius:50%; object-fit:cover; display:block; margin:0 auto .75rem auto; }
+    .role { color:#666; font-size:.9rem; margin:.25rem 0 .5rem 0; }
+    footer { text-align:center; padding:2rem; color:#666; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="inner">
+      <a href="index.html">SoftAIDev</a>
+      <div class="links">
+        <a href="services.html">Services</a>
+        <a href="team.html" style="background:#283593;">Team</a>
+        <a href="contact.html">Contact</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="login.html">Login</a>
+        <a href="signup.html">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <header>
+    <div class="container">
+      <h1>Meet the Team</h1>
+      <p>Experienced engineers and designers delivering quality software.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="members">
+      <div class="card">
+        <img class="avatar" src="https://via.placeholder.com/96" alt="Member" />
+        <h3>Lead Engineer</h3>
+        <div class="role">Full‑stack & Cloud</div>
+        <p>Architects scalable systems, APIs, and cloud infrastructure.</p>
+      </div>
+      <div class="card">
+        <img class="avatar" src="https://via.placeholder.com/96" alt="Member" />
+        <h3>Mobile Developer</h3>
+        <div class="role">Android & iOS</div>
+        <p>Builds fast, reliable mobile apps with great UX.</p>
+      </div>
+      <div class="card">
+        <img class="avatar" src="https://via.placeholder.com/96" alt="Member" />
+        <h3>UI/UX Designer</h3>
+        <div class="role">Design Systems</div>
+        <p>Designs delightful interfaces and user journeys.</p>
+      </div>
+      <div class="card">
+        <img class="avatar" src="https://via.placeholder.com/96" alt="Member" />
+        <h3>DevOps Engineer</h3>
+        <div class="role">CI/CD & Security</div>
+        <p>Automates deployments and ensures reliability.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 SoftAIDev
+  </footer>
+</body>
+</html>

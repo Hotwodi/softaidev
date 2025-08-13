@@ -196,15 +196,27 @@
                 SoftAIDev
             </a>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                <a href="#products" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Products</a>
-                <a href="#team" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Team</a>
-                <a href="#contact" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Contact</a>
+                <a href="services.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Services</a>
+                <a href="team.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Team</a>
+                <a href="contact.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; white-space: nowrap;">Contact</a>
                 <a href="marketplace.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: #3949ab; transition: background 0.3s; white-space: nowrap;">Marketplace</a>
                 <a href="login.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: #4caf50; transition: background 0.3s; white-space: nowrap;">Login</a>
                 <a href="signup.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: #f57c00; transition: background 0.3s; white-space: nowrap;">Sign Up</a>
             </div>
         </div>
     </nav>
+
+    <style>
+      @keyframes scroll-left { 0% { transform: translateX(0);} 100% { transform: translateX(-100%);} }
+      #marketplace-banner:hover span { animation-play-state: paused; }
+    </style>
+    <div id="marketplace-banner" style="background:#ffe082; color:#1a237e; overflow:hidden; white-space:nowrap; border-bottom:1px solid #f0c14b;">
+      <a href="marketplace.html" style="display:inline-block; width:100%; text-decoration:none; color:#1a237e; font-weight:600;">
+        <span style="display:inline-block; padding:10px 0; padding-left:100%; animation: scroll-left 12s linear infinite;">
+          👉 Click here to go to the Tutankaten Market Place — Discover and download Android apps!
+        </span>
+      </a>
+    </div>
 
     <header>
         <img class="hero-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Business Team">
