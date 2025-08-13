@@ -38,6 +38,18 @@
     </div>
   </nav>
 
+  <style>
+    @keyframes scroll-left { 0% { transform: translateX(0);} 100% { transform: translateX(-100%);} }
+    #marketplace-banner:hover span { animation-play-state: paused; }
+  </style>
+  <div id="marketplace-banner" style="background:#ffe082; color:#1a237e; overflow:hidden; white-space:nowrap; border-bottom:1px solid #f0c14b;">
+    <a href="marketplace.html" style="display:inline-block; width:100%; text-decoration:none; color:#1a237e; font-weight:600;">
+      <span style="display:inline-block; padding:10px 0; padding-left:100%; animation: scroll-left 12s linear infinite;">
+        👉 Enter Market Place
+      </span>
+    </a>
+  </div>
+
   <header>
     <div class="container">
       <h1>Contact Us</h1>
