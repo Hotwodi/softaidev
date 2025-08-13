@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tutankaten Market Place</title>
+    <link rel="stylesheet" href="css/marketplace.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .auth-btn {
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .auth-btn:hover {
+            background: #45a049;
+        }
+        .auth-links {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .error-message {
+            color: #f44336;
+            margin: 10px 0;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Login to Your Account</h2>
+        <p>Access your purchased apps and downloads for up to 2 years!</p>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+        <form id="loginForm" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="auth-btn">Login</button>
+        </form>
+        <div class="auth-links">
+            <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            <p><a href="forgot-password.html">Forgot password?</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { signIn } from './js/auth.js';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('errorMessage');
+            
+            try {
+                const { data, error } = await signIn(email, password);
+                
+                if (error) throw error;
+                
+                // Redirect to dashboard after successful login
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                errorElement.textContent = error.message;
+                errorElement.style.display = 'block';
+                console.error('Login error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
