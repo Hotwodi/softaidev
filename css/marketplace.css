@@ -539,3 +539,31 @@ body {
     margin: 2rem 0;
     opacity: 0.8;
 }
+
+/* Decorative pyramids fixed at bottom (marketplace) */
+.decor-pyramids {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 520px;
+    max-width: 85vw;
+    opacity: 0.15;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+/* Centered Sphinx, half-visible */
+.decor-sphinx-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -35%);
+    width: 60vw;
+    max-width: 900px;
+    opacity: 0.12;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
