@@ -11,6 +11,41 @@
     --transition: all 0.3s ease;
 }
 
+/* Rolling security banner */
+.rolling-banner {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(26, 71, 42, 0.95); /* secondary color with opacity */
+    color: var(--text-light);
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.banner-track {
+    display: inline-block;
+    padding: 0.5rem 0;
+    animation: marquee 22s linear infinite;
+}
+
+.banner-item {
+    display: inline-block;
+    margin-right: 2.5rem;
+    font-size: 0.95rem;
+}
+
+.rolling-banner:hover .banner-track {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
 * {
     margin: 0;
     padding: 0;

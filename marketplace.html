@@ -18,6 +18,9 @@
         </div>
     </header>
 
+    <!-- Rolling Security Banner -->
+    <div class="rolling-banner" id="securityBanner" aria-live="polite"></div>
+
     <div class="container">
         <div class="search-filter-bar">
             <div class="search-box">
@@ -103,5 +106,29 @@
     </footer>
 
     <script src="js/marketplace.js"></script>
+    <script>
+    // Initialize rolling security banner via JS
+    (function () {
+        const banner = document.getElementById('securityBanner');
+        if (!banner) return;
+
+        const messages = [
+            'All APKs are scanned for security. Please ensure you have "Unknown Sources" enabled in your device settings to install these applications.'
+        ];
+
+        const track = document.createElement('div');
+        track.className = 'banner-track';
+
+        // Build repeated content for seamless scroll
+        const itemText = ' 👉 ' + messages[0] + ' ';
+        for (let i = 0; i < 6; i++) {
+            const span = document.createElement('span');
+            span.className = 'banner-item';
+            span.textContent = itemText;
+            track.appendChild(span);
+        }
+        banner.appendChild(track);
+    })();
+    </script>
 </body>
 </html>
