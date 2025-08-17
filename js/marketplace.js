@@ -97,17 +97,33 @@ function createAppCard(app) {
                     ${stars}
                     <span>(${app.downloads})</span>
                 </div>
-                <button class="buy-btn" data-id="${app.id}" data-price="${app.price}" data-name="${app.name}">
-                    <i class="fas fa-shopping-cart"></i> Buy $${app.price.toFixed(2)}
-                </button>
+                ${app.is_paid 
+                    ? `<button class="buy-btn" data-id="${app.id}" data-button-id="${app.paypal_button_id}" data-price="${app.price}" data-name="${app.name}">
+                        <i class="fas fa-shopping-cart"></i> Buy $${app.price.toFixed(2)}
+                    </button>`
+                    : `<button class="download-btn" data-id="${app.id}">
+                        <i class="fas fa-download"></i> Download
+                    </button>`
+                }
             </div>
         </div>
     `;
     
     // Add click event to view app details
     card.addEventListener('click', (e) => {
-        if (!e.target.closest('.buy-btn')) {
+        const isDownloadBtn = e.target.closest('.download-btn');
+        const isBuyBtn = e.target.closest('.buy-btn');
+        
+        if (!isDownloadBtn && !isBuyBtn) {
             openAppModal(app);
+        } else if (isDownloadBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            requestDownload(app.id);
+        } else if (isBuyBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            openPayPalPayment(app);
         }
     });
     
@@ -258,8 +274,10 @@ function setupEventListeners() {
             if (app) {
                 openPayPalPayment(app);
             }
+        }
+    });
 
-// Function to open PayPal payment
+// Legacy payment function - replaced by direct download
 async function openPayPalPayment(app) {
     try {
         // Log the purchase attempt in Supabase
@@ -280,34 +298,15 @@ async function openPayPalPayment(app) {
             console.error('Error logging purchase attempt:', error);
             // Continue with payment even if logging fails
         }
-
-        // Create a form element
         const form = document.createElement('form');
-        form.method = 'POST';
+        form.method = 'post';
         form.action = 'https://www.paypal.com/cgi-bin/webscr';
-        form.target = '_blank';
         
-        // Generate a unique invoice ID
-        const invoiceId = `TUT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        
-        // Add form fields
+        // Use hosted button ID
         const fields = {
-            cmd: '_xclick',
-            business: 'YOUR_PAYPAL_EMAIL', // Replace with your PayPal email
-            item_name: app.name,
-            item_number: app.id,
-            amount: app.price,
-            currency_code: 'USD',
-            no_note: '1',
-            no_shipping: '1',
-            return: `${window.location.origin}/thank-you.html?payment=success&invoice=${invoiceId}`,
-            cancel_return: `${window.location.origin}/marketplace.html?payment=cancelled`,
-            notify_url: `${window.location.origin}/api/paypal-ipn`, // You'll need to set this up on your server
-            custom: JSON.stringify({
-                app_id: app.id,
-                user_id: (await supabase.auth.getSession())?.data?.session?.user?.id || 'anonymous',
-                invoice_id: invoiceId
-            })
+            cmd: '_s-xclick',
+            hosted_button_id: app.paypal_button_id,
+            currency_code: 'USD'
         };
         
         // Add fields to form
@@ -336,36 +335,45 @@ async function openPayPalPayment(app) {
     }
 }
 
-// Function to verify payment and provide download
-async function verifyAndProvideDownload(invoiceId) {
+// Function to request secure download URL
+async function requestDownload(appId) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        window.location.href = 'login.html';
+        return;
+    }
+
     try {
-        // In a real app, you would verify the payment with PayPal's API
-        // For now, we'll just log the verification attempt
-        const { data, error } = await supabase
-            .from('purchases')
-            .select('*')
-            .eq('invoice_id', invoiceId)
-            .single();
-            
-        if (error || !data) {
-            console.error('Purchase not found or error:', error);
-            return false;
+        const res = await fetch(
+            'https://glplnybcdgbyajdgzjrr.functions.supabase.co/get-download-url',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ app_id: appId })
+            }
+        );
+
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || 'Download failed');
         }
+
+        const { url } = await res.json();
         
-        // If payment is verified, return the download URL
-        if (data.status === 'completed') {
-            return {
-                success: true,
-                downloadUrl: data.download_url,
-                appName: data.app_name
-            };
-        }
-        
-        return false;
-        
+        // Show expiry message
+        const message = document.createElement('div');
+        message.className = 'alert alert-info';
+        message.textContent = 'Download link expires in 10 minutes. Purchases valid for 2 years.';
+        document.querySelector('.marketplace-container').prepend(message);
+        setTimeout(() => message.remove(), 10000);
+
+        // Redirect to download
+        window.location.href = url;
     } catch (error) {
-        console.error('Error verifying payment:', error);
-        return false;
+        alert(error.message);
     }
 }
 

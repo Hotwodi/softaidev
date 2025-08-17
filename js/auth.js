@@ -13,14 +13,16 @@ export async function checkAuth() {
 }
 
 // Sign up new user
-export async function signUp(email, password, username, fullName) {
+export async function signUp(email, password, username, firstName, lastName) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         username,
-        full_name: fullName
+        first_name: firstName,
+        last_name: lastName,
+        full_name: `${firstName} ${lastName}` // Keep full_name for backward compatibility
       }
     }
   });

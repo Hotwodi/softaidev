@@ -1,0 +1,54 @@
+{
+  "emailSettings": {
+    "supportEmail": "customersupport@softaidev.com",
+    "forwardingEnabled": true,
+    "autoReplyEnabled": true,
+    "replyDelay": 300,
+    "maxRetries": 3
+  },
+  "autoReplyTemplates": {
+    "support": {
+      "subject": "Re: {original_subject} - Support Request Received",
+      "body": "Dear {customer_name},\n\nThank you for contacting SoftAIDev support. We have received your request and our team will respond within 24 hours.\n\nYour inquiry has been assigned reference number: {ticket_id}\n\nFor urgent matters, please call us at (360) 972-1924.\n\nBest regards,\nSoftAIDev Support Team\ncustomersupport@softaidev.com"
+    },
+    "sales": {
+      "subject": "Re: {original_subject} - Sales Inquiry Received",
+      "body": "Dear {customer_name},\n\nThank you for your interest in SoftAIDev solutions. We have received your sales inquiry and our team will contact you within 4 business hours.\n\nIn the meantime, you can:\n- Browse our services at https://softaidev.com/services\n- Schedule a consultation at https://calendly.com/softaidev\n- Call us directly at (360) 972-1924\n\nBest regards,\nSoftAIDev Sales Team\ncustomersupport@softaidev.com"
+    },
+    "general": {
+      "subject": "Re: {original_subject} - Message Received",
+      "body": "Dear {customer_name},\n\nThank you for contacting SoftAIDev. We have received your message and will respond within 24 hours.\n\nIf you need immediate assistance, please:\n- Call us at (360) 972-1924\n- Visit our website at https://softaidev.com\n- Use our live chat feature\n\nBest regards,\nSoftAIDev Team\ncustomersupport@softaidev.com"
+    },
+    "complaint": {
+      "subject": "Re: {original_subject} - Complaint Received - Priority Response",
+      "body": "Dear {customer_name},\n\nWe sincerely apologize for any inconvenience you have experienced. Your complaint is very important to us and has been escalated to our management team.\n\nA senior team member will contact you within 2 business hours to address your concerns.\n\nReference number: {ticket_id}\nDirect contact: customersupport@softaidev.com\nPhone: (360) 972-1924\n\nWe are committed to resolving this matter promptly.\n\nSincerely,\nSoftAIDev Management Team"
+    }
+  },
+  "emailClassification": {
+    "supportKeywords": ["help", "support", "issue", "problem", "bug", "error", "not working", "broken", "technical"],
+    "salesKeywords": ["price", "pricing", "cost", "quote", "purchase", "buy", "sales", "demo", "trial", "consultation"],
+    "complaintKeywords": ["complaint", "dissatisfied", "unhappy", "terrible", "awful", "worst", "angry", "frustrated", "refund"],
+    "urgentKeywords": ["urgent", "emergency", "asap", "immediately", "critical", "down", "outage"]
+  },
+  "forwardingRules": {
+    "alwaysForward": true,
+    "forwardTo": "customersupport@softaidev.com",
+    "includeOriginalHeaders": true,
+    "addForwardingNote": true,
+    "forwardingNote": "This email was automatically forwarded from the SoftAIDev Virtual Assistant system."
+  },
+  "businessHours": {
+    "timezone": "America/Los_Angeles",
+    "monday": { "start": "09:00", "end": "17:00" },
+    "tuesday": { "start": "09:00", "end": "17:00" },
+    "wednesday": { "start": "09:00", "end": "17:00" },
+    "thursday": { "start": "09:00", "end": "17:00" },
+    "friday": { "start": "09:00", "end": "17:00" },
+    "saturday": { "closed": true },
+    "sunday": { "closed": true }
+  },
+  "outOfOfficeTemplate": {
+    "subject": "Re: {original_subject} - Out of Office Auto-Reply",
+    "body": "Thank you for your email. Our office is currently closed.\n\nBusiness Hours:\nMonday - Friday: 9:00 AM - 5:00 PM PST\n\nWe will respond to your message during our next business day.\n\nFor urgent matters, please call (360) 972-1924.\n\nBest regards,\nSoftAIDev Team\ncustomersupport@softaidev.com"
+  }
+}
