@@ -6,14 +6,35 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdi...'
 );
 
+// Admin email addresses
+const ADMIN_EMAILS = [
+  'customer.support@softaidev.com',
+  // Add other admin emails here as needed
+];
+
 // Check if user is logged in
 export async function checkAuth() {
   const { data: { session }, error } = await supabase.auth.getSession();
   return { session, error };
 }
 
+// Check if user is an admin
+export async function checkAdminAuth() {
+  const { session, error } = await checkAuth();
+  
+  if (error || !session) {
+    return { isAdmin: false, session: null, error: error || 'Not authenticated' };
+  }
+  
+  const isAdmin = ADMIN_EMAILS.includes(session.user.email);
+  return { isAdmin, session, error: null };
+}
+
 // Sign up new user
 export async function signUp(email, password, username, firstName, lastName) {
+  // Determine if this is an admin signup
+  const isAdmin = ADMIN_EMAILS.includes(email);
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -22,7 +43,8 @@ export async function signUp(email, password, username, firstName, lastName) {
         username,
         first_name: firstName,
         last_name: lastName,
-        full_name: `${firstName} ${lastName}` // Keep full_name for backward compatibility
+        full_name: `${firstName} ${lastName}`, // Keep full_name for backward compatibility
+        role: isAdmin ? 'admin' : 'user'
       }
     }
   });
@@ -35,6 +57,15 @@ export async function signIn(email, password) {
     email,
     password
   });
+  
+  // If sign in successful, update user metadata with role if needed
+  if (data?.user && !data.user.user_metadata?.role) {
+    const isAdmin = ADMIN_EMAILS.includes(email);
+    await supabase.auth.updateUser({
+      data: { role: isAdmin ? 'admin' : 'user' }
+    });
+  }
+  
   return { data, error };
 }
 

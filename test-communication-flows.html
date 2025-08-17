@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication Flow Tests - SoftAIDev</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --body-bg: #f5f8ff;
+            --card-bg: #ffffff;
+            --border-color: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #999;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--body-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 4px;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5bd9;
+            border-color: #3a5bd9;
+        }
+
+        .test-config {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .test-results {
+            margin-top: 1.5rem;
+        }
+
+        .test-log {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .log-success {
+            color: var(--success-color);
+        }
+
+        .log-failure {
+            color: var(--danger-color);
+        }
+
+        .log-info {
+            color: var(--info-color);
+        }
+
+        .summary {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-label {
+            font-weight: 500;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Communication Flow Tests</h1>
+            <p class="description">Test the end-to-end communication flows between customer and admin interfaces</p>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Test Configuration</h2>
+            </div>
+            <div class="test-config">
+                <form id="testConfigForm">
+                    <div class="form-group">
+                        <label for="adminEmail">Admin Email</label>
+                        <input type="email" id="adminEmail" class="form-control" value="customer.support@softaidev.com" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Password</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password">
+                    </div>
+                    <div class="form-group">
+                        <label for="testVisitorName">Test Visitor Name</label>
+                        <input type="text" id="testVisitorName" class="form-control" value="Test Visitor">
+                    </div>
+                    <div class="form-group">
+                        <label for="testVisitorEmail">Test Visitor Email</label>
+                        <input type="email" id="testVisitorEmail" class="form-control" value="test@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="testMessage">Test Message</label>
+                        <input type="text" id="testMessage" class="form-control" value="This is a test message from the automated testing script">
+                    </div>
+                    <div class="form-group">
+                        <label for="testPhoneNumber">Test Phone Number</label>
+                        <input type="text" id="testPhoneNumber" class="form-control" value="+1234567890">
+                    </div>
+                    <button type="button" id="runTestsBtn" class="btn btn-primary">Run All Tests</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Test Results</h2>
+                <button type="button" id="clearLogBtn" class="btn btn-primary">Clear Log</button>
+            </div>
+            <div class="test-results">
+                <div id="testLog" class="test-log"></div>
+                <div id="testSummary" class="summary" style="display: none;">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Tests:</span>
+                        <span id="totalTests">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Passed:</span>
+                        <span id="passedTests">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Failed:</span>
+                        <span id="failedTests">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>SoftAIDev Virtual Assistant | <a href="admin-dashboard.html">Back to Admin Dashboard</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
+        import { assistantService, emailService } from './js/services/assistantService.js';
+        import { checkAuth, checkAdminAuth, signIn, signOut } from './js/auth.js';
+
+        // Initialize Supabase client
+        const supabase = createClient(
+            'https://glplnybcdgbyajdgzjrr.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdi...'
+        );
+
+        // DOM Elements
+        const testConfigForm = document.getElementById('testConfigForm');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const testVisitorNameInput = document.getElementById('testVisitorName');
+        const testVisitorEmailInput = document.getElementById('testVisitorEmail');
+        const testMessageInput = document.getElementById('testMessage');
+        const testPhoneNumberInput = document.getElementById('testPhoneNumber');
+        const runTestsBtn = document.getElementById('runTestsBtn');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const testLog = document.getElementById('testLog');
+        const testSummary = document.getElementById('testSummary');
+        const totalTestsElement = document.getElementById('totalTests');
+        const passedTestsElement = document.getElementById('passedTests');
+        const failedTestsElement = document.getElementById('failedTests');
+
+        // Test results tracking
+        const testResults = {
+            passed: 0,
+            failed: 0,
+            total: 0
+        };
+
+        // Helper functions
+        function logToUI(message, type) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type || 'info'}`;
+            logEntry.textContent = message;
+            testLog.appendChild(logEntry);
+            testLog.scrollTop = testLog.scrollHeight;
+        }
+
+        function logSuccess(message) {
+            logToUI(`✅ PASS: ${message}`, 'success');
+            testResults.passed++;
+            testResults.total++;
+            updateSummary();
+        }
+
+        function logFailure(message, error) {
+            logToUI(`❌ FAIL: ${message}`, 'failure');
+            if (error) logToUI(`   Error: ${error.message || error}`, 'failure');
+            testResults.failed++;
+            testResults.total++;
+            updateSummary();
+        }
+
+        function logInfo(message) {
+            logToUI(`ℹ️ INFO: ${message}`, 'info');
+        }
+
+        function updateSummary() {
+            totalTestsElement.textContent = testResults.total;
+            passedTestsElement.textContent = testResults.passed;
+            failedTestsElement.textContent = testResults.failed;
+            testSummary.style.display = 'block';
+        }
+
+        function resetTestResults() {
+            testResults.passed = 0;
+            testResults.failed = 0;
+            testResults.total = 0;
+            updateSummary();
+        }
+
+        function clearLog() {
+            testLog.innerHTML = '';
+            testSummary.style.display = 'none';
+            resetTestResults();
+        }
+
+        // Test functions
+        async function testAdminAuth(config) {
+            try {
+                logInfo('Testing admin authentication...');
+                
+                // Sign out any existing session
+                await signOut();
+                
+                // Try to sign in with admin credentials
+                const { data, error } = await signIn(config.adminEmail, config.adminPassword);
+                
+                if (error) {
+                    logFailure('Admin sign in failed', error);
+                    return false;
+                }
+                
+                // Verify admin role
+                const { isAdmin } = await checkAdminAuth();
+                
+                if (isAdmin) {
+                    logSuccess('Admin authentication successful');
+                    return true;
+                } else {
+                    logFailure('User authenticated but not recognized as admin');
+                    return false;
+                }
+            } catch (error) {
+                logFailure('Admin authentication test threw an exception', error);
+                return false;
+            }
+        }
+
+        async function testChatFlow(config) {
+            try {
+                logInfo('Testing chat communication flow...');
+                
+                // Generate a unique conversation ID for this test
+                const testConversationId = `test-${Date.now()}`;
+                
+                // Step 1: Customer sends a message
+                const visitorMessage = {
+                    conversationId: testConversationId,
+                    sender: 'visitor',
+                    message: config.testMessage,
+                    visitorName: config.testVisitorName,
+                    visitorEmail: config.testVisitorEmail
+                };
+                
+                await assistantService.saveChatMessage(visitorMessage);
+                logSuccess('Customer message sent successfully');
+                
+                // Step 2: Verify the message appears in the admin dashboard
+                const { data: messages } = await assistantService.getChatHistory(testConversationId);
+                
+                if (!messages || messages.length === 0) {
+                    logFailure('Customer message not found in chat history');
+                    return false;
+                }
+                
+                const foundMessage = messages.find(msg => 
+                    msg.conversation_id === testConversationId && 
+                    msg.sender === 'visitor' && 
+                    msg.message === config.testMessage
+                );
+                
+                if (foundMessage) {
+                    logSuccess('Customer message found in admin dashboard');
+                } else {
+                    logFailure('Customer message not found in admin dashboard');
+                    return false;
+                }
+                
+                // Step 3: Admin sends a reply
+                const adminReply = {
+                    conversationId: testConversationId,
+                    sender: 'assistant',
+                    message: `Reply to: ${config.testMessage}`
+                };
+                
+                await assistantService.saveChatMessage(adminReply);
+                logSuccess('Admin reply sent successfully');
+                
+                // Step 4: Verify the reply appears in the chat history
+                const { data: updatedMessages } = await assistantService.getChatHistory(testConversationId);
+                
+                const foundReply = updatedMessages.find(msg => 
+                    msg.conversation_id === testConversationId && 
+                    msg.sender === 'assistant' && 
+                    msg.message === adminReply.message
+                );
+                
+                if (foundReply) {
+                    logSuccess('Admin reply found in chat history');
+                    return true;
+                } else {
+                    logFailure('Admin reply not found in chat history');
+                    return false;
+                }
+            } catch (error) {
+                logFailure('Chat flow test threw an exception', error);
+                return false;
+            }
+        }
+
+        async function testEmailFlow(config) {
+            try {
+                logInfo('Testing email communication flow...');
+                
+                // Step 1: Customer sends an email
+                const testEmail = {
+                    from_name: config.testVisitorName,
+                    from_email: config.testVisitorEmail,
+                    subject: config.testSubject,
+                    body: config.testMessage,
+                    status: 'received'
+                };
+                
+                const { data: emailData, error: emailError } = await emailService.saveEmail(testEmail);
+                
+                if (emailError) {
+                    logFailure('Failed to save customer email', emailError);
+                    return false;
+                }
+                
+                logSuccess('Customer email sent successfully');
+                
+                // Step 2: Verify the email appears in the admin dashboard
+                const { data: emails } = await assistantService.getEmailHistory();
+                
+                const foundEmail = emails.find(email => 
+                    email.from_email === config.testVisitorEmail && 
+                    email.subject === config.testSubject
+                );
+                
+                if (foundEmail) {
+                    logSuccess('Customer email found in admin dashboard');
+                } else {
+                    logFailure('Customer email not found in admin dashboard');
+                    return false;
+                }
+                
+                // Step 3: Admin sends a reply
+                const replyEmail = {
+                    to_name: config.testVisitorName,
+                    to_email: config.testVisitorEmail,
+                    subject: `Re: ${config.testSubject}`,
+                    body: `This is a reply to: ${config.testMessage}`,
+                    status: 'sent',
+                    parent_email_id: foundEmail.email_id
+                };
+                
+                const { data: replyData, error: replyError } = await emailService.saveEmail(replyEmail);
+                
+                if (replyError) {
+                    logFailure('Failed to save admin reply email', replyError);
+                    return false;
+                }
+                
+                logSuccess('Admin reply email sent successfully');
+                
+                // Step 4: Verify the reply appears in the email history
+                const { data: updatedEmails } = await assistantService.getEmailHistory();
+                
+                const foundReply = updatedEmails.find(email => 
+                    email.to_email === config.testVisitorEmail && 
+                    email.subject === replyEmail.subject
+                );
+                
+                if (foundReply) {
+                    logSuccess('Admin reply email found in email history');
+                    return true;
+                } else {
+                    logFailure('Admin reply email not found in email history');
+                    return false;
+                }
+            } catch (error) {
+                logFailure('Email flow test threw an exception', error);
+                return false;
+            }
+        }
+
+        async function testCallFlow(config) {
+            try {
+                logInfo('Testing call communication flow...');
+                
+                // Step 1: Customer requests a callback
+                const callbackRequest = {
+                    customer_name: config.testVisitorName,
+                    phone_number: config.testPhoneNumber,
+                    callback_request: true,
+                    call_type: 'incoming',
+                    status: 'pending',
+                    timestamp: new Date().toISOString()
+                };
+                
+                const { data: callData, error: callError } = await assistantService.saveCall(callbackRequest);
+                
+                if (callError) {
+                    logFailure('Failed to save callback request', callError);
+                    return false;
+                }
+                
+                logSuccess('Customer callback request sent successfully');
+                
+                // Step 2: Verify the callback request appears in the admin dashboard
+                const { data: calls } = await assistantService.getCallHistory();
+                
+                const foundCall = calls.find(call => 
+                    call.customer_name === config.testVisitorName && 
+                    call.phone_number === config.testPhoneNumber &&
+                    call.callback_request === true
+                );
+                
+                if (foundCall) {
+                    logSuccess('Customer callback request found in admin dashboard');
+                } else {
+                    logFailure('Customer callback request not found in admin dashboard');
+                    return false;
+                }
+                
+                // Step 3: Admin marks the call as completed
+                const updatedCall = {
+                    ...foundCall,
+                    status: 'completed',
+                    duration: 120, // 2 minutes
+                    notes: 'Test call completed successfully'
+                };
+                
+                const { data: updateData, error: updateError } = await assistantService.updateCall(updatedCall);
+                
+                if (updateError) {
+                    logFailure('Failed to update call status', updateError);
+                    return false;
+                }
+                
+                logSuccess('Admin marked call as completed successfully');
+                
+                // Step 4: Verify the call status is updated
+                const { data: updatedCalls } = await assistantService.getCallHistory();
+                
+                const foundUpdatedCall = updatedCalls.find(call => 
+                    call.call_id === foundCall.call_id && 
+                    call.status === 'completed'
+                );
+                
+                if (foundUpdatedCall) {
+                    logSuccess('Updated call status found in call history');
+                    return true;
+                } else {
+                    logFailure('Updated call status not found in call history');
+                    return false;
+                }
+            } catch (error) {
+                logFailure('Call flow test threw an exception', error);
+                return false;
+            }
+        }
+
+        async function testRealTimeSubscription(config) {
+            try {
+                logInfo('Testing real-time subscription for chat messages...');
+                
+                // Generate a unique conversation ID for this test
+                const testConversationId = `test-rt-${Date.now()}`;
+                
+                // Set up a promise that will resolve when we receive the message via subscription
+                const messageReceivedPromise = new Promise((resolve, reject) => {
+                    // Set a timeout to fail the test if we don't receive the message
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Timed out waiting for real-time message'));
+                    }, 5000); // 5 second timeout
+                    
+                    // Subscribe to changes
+                    const subscription = supabase
+                        .channel('public:chat_messages')
+                        .on('postgres_changes', { 
+                            event: 'INSERT', 
+                            schema: 'public', 
+                            table: 'chat_messages',
+                            filter: `conversation_id=eq.${testConversationId}`
+                        }, (payload) => {
+                            clearTimeout(timeout);
+                            subscription.unsubscribe();
+                            resolve(payload.new);
+                        })
+                        .subscribe();
+                });
+                
+                // Send a test message
+                const testMessage = {
+                    conversationId: testConversationId,
+                    sender: 'visitor',
+                    message: 'Real-time test message',
+                    visitorName: config.testVisitorName,
+                    visitorEmail: config.testVisitorEmail
+                };
+                
+                // Wait a moment before sending the message
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Send the message
+                await assistantService.saveChatMessage(testMessage);
+                logSuccess('Test message sent for real-time subscription test');
+                
+                try {
+                    // Wait for the message to be received via subscription
+                    const receivedMessage = await messageReceivedPromise;
+                    
+                    if (receivedMessage.message === testMessage.message) {
+                        logSuccess('Message received via real-time subscription');
+                        return true;
+                    } else {
+                        logFailure('Received message does not match sent message');
+                        return false;
+                    }
+                } catch (error) {
+                    logFailure('Failed to receive message via real-time subscription', error);
+                    return false;
+                }
+            } catch (error) {
+                logFailure('Real-time subscription test threw an exception', error);
+                return false;
+            }
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            clearLog();
+            logInfo('Starting end-to-end communication flow tests...');
+            
+            // Get test configuration
+            const config = {
+                adminEmail: document.getElementById('adminEmail').value,
+                adminPassword: adminPasswordInput.value,
+                testVisitorName: testVisitorNameInput.value,
+                testVisitorEmail: testVisitorEmailInput.value,
+                testMessage: testMessageInput.value,
+                testSubject: 'Test Email Subject',
+                testPhoneNumber: testPhoneNumberInput.value
+            };
+            
+            // Validate configuration
+            if (!config.adminPassword) {
+                logFailure('Admin password is required');
+                return;
+            }
+            
+            // Test admin authentication first
+            const authSuccess = await testAdminAuth(config);
+            
+            if (!authSuccess) {
+                logInfo('Skipping remaining tests due to authentication failure');
+                return;
+            }
+            
+            // Run all communication flow tests
+            await testChatFlow(config);
+            await testEmailFlow(config);
+            await testCallFlow(config);
+            await testRealTimeSubscription(config);
+            
+            // Print test summary
+            logInfo('Test Summary:');
+            logInfo(`Total Tests: ${testResults.total}`);
+            logInfo(`Passed: ${testResults.passed}`);
+            logInfo(`Failed: ${testResults.failed}`);
+            
+            if (testResults.failed === 0) {
+                logInfo('All tests passed! 🎉');
+            } else {
+                logInfo('Some tests failed. Please review the logs above.');
+            }
+        }
+
+        // Event listeners
+        runTestsBtn.addEventListener('click', runAllTests);
+        clearLogBtn.addEventListener('click', clearLog);
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            logInfo('Test runner initialized');
+            logInfo('Configure test parameters and click "Run All Tests" to begin');
+        });
+    </script>
+</body>
+</html>

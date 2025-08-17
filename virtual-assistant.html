@@ -3,231 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoftAIDev Virtual Assistant</title>
+    <meta name="description" content="SoftAIDev Virtual Assistant - Get help via chat, email, or call">
+    <title>Virtual Assistant - SoftAIDev</title>
+    <link rel="stylesheet" href="css/customer-assistant.css">
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://glplnybcdgbyajdgzjrr.supabase.co">
+    <link rel="preload" href="js/chat-handler.js" as="script">
+    <link rel="preload" href="js/auth.js" as="script">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/virtual-assistant.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav style="background: #1a237e; padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
-            <a href="index.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">
-                <img src="https://via.placeholder.com/30" alt="Logo" style="vertical-align: middle; margin-right: 10px;">
-                SoftAIDev Assistant
-            </a>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                <a href="index.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s;">Home</a>
-                <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s;">Dashboard</a>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    
+    <header class="support-header" role="banner">
+        <div class="header-container">
+            <div class="header-logo">
+                <h1>SoftAIDev</h1>
+                <p>Virtual Assistant</p>
             </div>
+            <nav class="header-actions" role="navigation" aria-label="Main Navigation">
+                <a href="index.html" class="header-link">Home</a>
+                <a href="services.html" class="header-link">Services</a>
+                <a href="contact.html" class="header-link">Contact</a>
+                <a href="admin-login.html" class="header-link">Admin Login</a>
+            </nav>
         </div>
-    </nav>
-
-    <div class="container">
-        <header class="assistant-header">
-            <h1>🤖 Virtual Assistant Control Center</h1>
-            <p>Manage email, chat, and VOIP communications from one unified interface</p>
-        </header>
-
-        <!-- Assistant Status Panel -->
-        <div class="status-panel">
-            <div class="status-item">
-                <span class="status-indicator active" id="assistant-status"></span>
-                <span>Assistant Status: <strong id="status-text">Online</strong></span>
-            </div>
-            <div class="status-item">
-                <span>Active Conversations: <strong id="active-conversations">0</strong></span>
-            </div>
-            <div class="status-item">
-                <span>Pending Emails: <strong id="pending-emails">0</strong></span>
-            </div>
-        </div>
-
-        <!-- Main Assistant Interface -->
-        <div class="assistant-grid">
-            <!-- Email Management Panel -->
-            <div class="panel email-panel">
-                <div class="panel-header">
-                    <h3>📧 Email Management</h3>
-                    <button class="btn-refresh" onclick="refreshEmails()">🔄</button>
-                </div>
-                <div class="panel-content">
-                    <div class="email-controls">
-                        <button class="btn-primary" onclick="checkEmails()">Check New Emails</button>
-                        <button class="btn-secondary" onclick="showEmailTemplates()">Templates</button>
-                    </div>
-                    <div class="email-list" id="email-list">
-                        <div class="email-item">
-                            <div class="email-header">
-                                <strong>Sample Email</strong>
-                                <span class="email-time">2 min ago</span>
-                            </div>
-                            <div class="email-preview">Customer inquiry about pricing...</div>
-                            <div class="email-actions">
-                                <button class="btn-small" onclick="summarizeEmail(this)">Summarize</button>
-                                <button class="btn-small" onclick="draftReply(this)">Auto Reply</button>
-                            </div>
-                        </div>
-                    </div>
+    </header>
+    
+    <main id="main-content" role="main">
+        <!-- Navigation Bar -->
+        <nav style="background: #1a237e; padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                <a href="index.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">
+                    <img src="https://via.placeholder.com/30" alt="Logo" style="vertical-align: middle; margin-right: 10px;">
+                    SoftAIDev Assistant
+                </a>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                    <a href="index.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s;">Home</a>
+                    <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s;">Dashboard</a>
                 </div>
             </div>
+        </nav>
 
-            <!-- Live Chat Panel -->
-            <div class="panel chat-panel">
-                <div class="panel-header">
-                    <h3>💬 Live Chat Support</h3>
-                    <span class="chat-status" id="chat-status">Available</span>
-                </div>
-                <div class="panel-content">
-                    <div class="chat-conversations" id="chat-conversations">
-                        <div class="conversation-item">
-                            <div class="conversation-header">
-                                <strong>Visitor #1234</strong>
-                                <span class="conversation-time">Active now</span>
-                            </div>
-                            <div class="conversation-preview">Hello, I need help with...</div>
-                            <button class="btn-small" onclick="openChat('1234')">Open Chat</button>
-                        </div>
-                    </div>
-                    <div class="chat-controls">
-                        <button class="btn-primary" onclick="toggleChatAvailability()">Toggle Availability</button>
-                        <button class="btn-secondary" onclick="showChatTemplates()">Quick Responses</button>
-                    </div>
-                </div>
-            </div>
+        <div class="container">
+            <header class="assistant-header">
+                <h1>🤖 Virtual Assistant</h1>
+                <p>Get help via chat, email, or call - we're here to assist you</p>
+            </header>
 
-            <!-- VOIP Call Panel -->
-            <div class="panel voip-panel">
-                <div class="panel-header">
-                    <h3>📞 VOIP Call Management</h3>
-                    <span class="call-status" id="call-status">Ready</span>
+            <!-- Assistant Status Panel -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-indicator active" id="assistant-status"></span>
+                    <span>Assistant Status: <strong id="status-text">Online</strong></span>
                 </div>
-                <div class="panel-content">
-                    <div class="call-controls">
-                        <button class="btn-call" onclick="toggleVoipService()">
-                            <span id="voip-toggle-text">Start VOIP Service</span>
-                        </button>
-                        <button class="btn-secondary" onclick="testTTS()">Test TTS</button>
-                        <button class="btn-secondary" onclick="showCallbackRequests()">View Callbacks</button>
-                    </div>
-                    <div class="active-calls" id="active-calls">
-                        <div class="call-item">
-                            <div class="call-info">
-                                <strong>No active calls</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="call-history" id="call-history">
-                        <h4>Recent Calls</h4>
-                        <div class="call-log">
-                            <div class="call-entry">
-                                <span>+1-555-0123</span>
-                                <span>2:30 PM</span>
-                                <span class="call-duration">3:45</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings & Configuration Panel -->
-            <div class="panel settings-panel">
-                <div class="panel-header">
-                    <h3>⚙️ Assistant Settings</h3>
-                </div>
-                <div class="panel-content">
-                    <div class="settings-group">
-                        <h4>Response Style</h4>
-                        <select id="response-tone" onchange="updateResponseTone()">
-                            <option value="professional">Professional</option>
-                            <option value="friendly">Friendly</option>
-                            <option value="casual">Casual</option>
-                            <option value="formal">Formal</option>
-                        </select>
-                    </div>
-                    <div class="settings-group">
-                        <h4>Auto-Reply Settings</h4>
-                        <label>
-                            <input type="checkbox" id="auto-email-reply" checked>
-                            Enable auto email replies
-                        </label>
-                        <label>
-                            <input type="checkbox" id="auto-chat-greeting" checked>
-                            Send automatic chat greetings
-                        </label>
-                    </div>
-                    <div class="settings-group">
-                        <h4>Privacy & Security</h4>
-                        <button class="btn-secondary" onclick="showPrivacySettings()">Privacy Settings</button>
-                        <button class="btn-secondary" onclick="exportData()">Export Data</button>
-                    </div>
+                <div class="communication-options">
+                    <button id="chat-button" class="btn-primary" onclick="openChatWindow()" aria-label="Start chat">Start Chat</button>
+                    <button id="email-button" class="btn-primary" onclick="showEmailForm()" aria-label="Send email">Send Email</button>
+                    <button id="callback-button" class="btn-primary" onclick="requestCallback()" aria-label="Request callback">Request Callback</button>
                 </div>
             </div>
         </div>
 
-        <!-- Conversation History Panel -->
-        <div class="conversation-history">
-            <h3>📋 Recent Activity</h3>
-            <div class="activity-feed" id="activity-feed">
-                <div class="activity-item">
-                    <span class="activity-time">2:45 PM</span>
-                    <span class="activity-type email">Email</span>
-                    <span class="activity-description">Auto-replied to customer inquiry</span>
+        <!-- User Status Panel -->
+        <div class="user-status-panel">
+            <h3>How Can We Help You?</h3>
+            <div class="help-options">
+                <div class="help-option">
+                    <h4>Chat Support</h4>
+                    <p>Get instant help from our virtual assistant</p>
+                    <button class="btn-secondary" onclick="openChatWindow()" id="chat-button-secondary">Start Chat</button>
                 </div>
-                <div class="activity-item">
-                    <span class="activity-time">2:30 PM</span>
-                    <span class="activity-type chat">Chat</span>
-                    <span class="activity-description">Assisted visitor with product questions</span>
+                <div class="help-option">
+                    <h4>Email Support</h4>
+                    <p>Send us a message and we'll respond within 24 hours</p>
+                    <button class="btn-secondary" onclick="showEmailForm()" id="email-button-secondary">Send Email</button>
                 </div>
-                <div class="activity-item">
-                    <span class="activity-time">2:15 PM</span>
-                    <span class="activity-type call">Call</span>
-                    <span class="activity-description">Handled support call - 3:45 duration</span>
+                <div class="help-option">
+                    <h4>Phone Support</h4>
+                    <p>Request a callback from our support team</p>
+                    <button class="btn-secondary" onclick="requestCallback()" id="callback-button-secondary">Request Callback</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Chat Modal -->
-    <div id="chat-modal" class="modal">
+    <div id="chat-modal" class="modal" role="dialog" aria-labelledby="chat-modal-title" aria-hidden="true">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Chat with Visitor</h3>
-                <span class="close" onclick="closeChatModal()">&times;</span>
+                <h3 id="chat-modal-title">Chat with Support</h3>
+                <span class="close" onclick="closeChatModal()" aria-label="Close">&times;</span>
             </div>
-            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-messages" id="chat-messages" aria-live="polite"></div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Type your message...">
-                <button onclick="sendChatMessage()">Send</button>
-                <button onclick="suggestResponse()">AI Suggest</button>
+                <label for="chat-input" class="sr-only">Type your message</label>
+                <input type="text" id="chat-input" placeholder="Type your message..." aria-label="Type your message">
+                <button id="send-chat" onclick="sendChatMessage()" aria-label="Send message">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- Email Template Modal -->
-    <div id="email-template-modal" class="modal">
+    <!-- Email Form Modal -->
+    <div id="email-modal" class="modal" role="dialog" aria-labelledby="email-modal-title" aria-hidden="true">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Email Templates</h3>
-                <span class="close" onclick="closeEmailTemplateModal()">&times;</span>
+                <h3 id="email-modal-title">Send Email to Support</h3>
+                <span class="close" onclick="closeEmailModal()" aria-label="Close">&times;</span>
             </div>
-            <div class="template-list">
-                <div class="template-item" onclick="useTemplate('customer-service')">
-                    <h4>Customer Service Response</h4>
-                    <p>Professional response template for customer inquiries</p>
+            <div class="email-form">
+                <div class="form-group">
+                    <label for="email-name">Your Name <span class="required">*</span></label>
+                    <input type="text" id="email-name" required aria-required="true">
                 </div>
-                <div class="template-item" onclick="useTemplate('technical-support')">
-                    <h4>Technical Support</h4>
-                    <p>Template for technical assistance requests</p>
+                <div class="form-group">
+                    <label for="email-address">Your Email <span class="required">*</span></label>
+                    <input type="email" id="email-address" required aria-required="true">
                 </div>
-                <div class="template-item" onclick="useTemplate('sales-inquiry')">
-                    <h4>Sales Inquiry</h4>
-                    <p>Response template for sales and pricing questions</p>
+                <div class="form-group">
+                    <label for="email-subject">Subject <span class="required">*</span></label>
+                    <input type="text" id="email-subject" required aria-required="true">
                 </div>
+                <div class="form-group">
+                    <label for="email-message">Message <span class="required">*</span></label>
+                    <textarea id="email-message" rows="5" required aria-required="true"></textarea>
+                </div>
+                <button id="send-email" onclick="sendEmail()" class="btn-primary" aria-label="Send email">Send Email</button>
+                <div id="email-status" class="status-message notification" aria-live="polite"></div>
             </div>
         </div>
     </div>
+    
+    <!-- Callback Modal -->
+    <div id="callback-modal" class="modal" role="dialog" aria-labelledby="callback-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="callback-modal-title">Request a Callback</h3>
+                <span class="close" onclick="closeCallbackModal()" aria-label="Close">&times;</span>
+            </div>
+            <div class="callback-form">
+                <div class="form-group">
+                    <label for="callback-name">Your Name <span class="required">*</span></label>
+                    <input type="text" id="callback-name" required aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="callback-phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="callback-phone" required aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="callback-time">Preferred Time</label>
+                    <select id="callback-time">
+                        <option value="morning">Morning (9AM - 12PM)</option>
+                        <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                        <option value="evening">Evening (5PM - 8PM)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="callback-reason">Reason for Call</label>
+                    <textarea id="callback-reason" rows="3"></textarea>
+                </div>
+                <button id="request-callback" onclick="submitCallback()" class="btn-primary" aria-label="Request callback">Request Callback</button>
+                <div id="callback-status" class="status-message notification" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Add screen reader only styles -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+    </style>
 
     <script type="module" src="js/services/supabaseService.js"></script>
     <script type="module" src="js/services/assistantService.js"></script>
@@ -235,5 +216,6 @@
     <script type="module" src="js/email-handler.js"></script>
     <script type="module" src="js/chat-handler.js"></script>
     <script src="js/voip-handler.js"></script>
+    <script src="js/modal-handlers.js"></script>
 </body>
 </html>

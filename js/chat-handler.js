@@ -241,28 +241,7 @@ class ChatHandler {
         messagesContainer.innerHTML = '';
         
         conversation.messages.forEach(msg => {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${msg.sender}`;
-            messageDiv.style.cssText = `
-                margin-bottom: 1rem;
-                padding: 0.75rem;
-                border-radius: 8px;
-                max-width: 80%;
-                ${msg.sender === 'visitor' ? 
-                    'background: #e3f2fd; margin-left: 0; margin-right: auto;' : 
-                    'background: #1a237e; color: white; margin-left: auto; margin-right: 0;'
-                }
-            `;
-            messageDiv.innerHTML = `
-                <div style="font-weight: 600; margin-bottom: 0.25rem;">
-                    ${msg.sender === 'visitor' ? conversation.visitorName : 'SoftAIDev Assistant'}
-                </div>
-                <div>${msg.message}</div>
-                <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem;">
-                    ${this.formatTime(msg.timestamp)}
-                </div>
-            `;
-            messagesContainer.appendChild(messageDiv);
+            this.displayMessage(messagesContainer, msg, conversation.visitorName);
         });
 
         // Scroll to bottom
@@ -475,6 +454,41 @@ class ChatHandler {
         }
     }
 
+    displayMessage(container, msg, visitorName) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${msg.sender}`;
+        messageDiv.style.cssText = `
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            max-width: 80%;
+            ${msg.sender === 'visitor' ? 
+                'background: #e3f2fd; margin-left: 0; margin-right: auto;' : 
+                'background: #1a237e; color: white; margin-left: auto; margin-right: 0;'
+            }
+        `;
+        messageDiv.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">
+                ${msg.sender === 'visitor' ? visitorName : 'SoftAIDev Assistant'}
+            </div>
+            <div>${msg.message}</div>
+            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem;">
+                ${this.formatTime(msg.timestamp)}
+            </div>
+        `;
+        container.appendChild(messageDiv);
+        return messageDiv;
+    }
+    
+    addMessage(container, sender, message, visitorName) {
+        const msg = {
+            sender: sender,
+            message: message,
+            timestamp: new Date()
+        };
+        return this.displayMessage(container, msg, visitorName);
+    }
+    
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.style.cssText = `
@@ -523,8 +537,51 @@ function showChatTemplates() {
     chatHandler.showChatTemplates();
 }
 
+function displayMessage(container, message, sender, visitorName) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    messageDiv.style.cssText = `
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        max-width: 80%;
+        ${sender === 'visitor' ? 
+            'background: #e3f2fd; margin-left: 0; margin-right: auto;' : 
+            'background: #1a237e; color: white; margin-left: auto; margin-right: 0;'
+        }
+    `;
+    messageDiv.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 0.25rem;">
+            ${sender === 'visitor' ? visitorName : 'SoftAIDev Assistant'}
+        </div>
+        <div>${message}</div>
+        <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem;">
+            ${new Date().toLocaleTimeString()}
+        </div>
+    `;
+    container.appendChild(messageDiv);
+    return messageDiv;
+}
+
+function addMessage(container, sender, message, visitorName) {
+    return displayMessage(container, message, sender, visitorName);
+}
+
 // Initialize chat handler when DOM is loaded
 let chatHandler;
 document.addEventListener('DOMContentLoaded', function() {
     chatHandler = new ChatHandler();
+    
+    // Add click event listeners
+    document.getElementById('send-chat')?.addEventListener('click', function() {
+        sendChatMessage();
+    });
+    
+    document.getElementById('chat-button')?.addEventListener('click', function() {
+        document.getElementById('chat-modal').style.display = 'block';
+    });
+    
+    document.getElementById('close-chat')?.addEventListener('click', function() {
+        closeChatModal();
+    });
 });

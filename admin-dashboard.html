@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftAIDev Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin-dashboard.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="admin-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="https://via.placeholder.com/30" alt="Logo">
+                <span>SoftAIDev Admin</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="virtual-assistant.html" class="nav-link">Customer View</a>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-sidebar">
+            <div class="admin-user">
+                <div class="user-avatar" id="userAvatar"></div>
+                <div class="user-info">
+                    <h3 id="userName">Admin User</h3>
+                    <p id="userEmail">customer.support@softaidev.com</p>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-target="dashboard-panel">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#email" class="menu-item" data-target="email-panel">
+                    <span class="menu-icon">📧</span>
+                    <span>Email Management</span>
+                </a>
+                <a href="#chat" class="menu-item" data-target="chat-panel">
+                    <span class="menu-icon">💬</span>
+                    <span>Chat Management</span>
+                </a>
+                <a href="#calls" class="menu-item" data-target="calls-panel">
+                    <span class="menu-icon">📞</span>
+                    <span>Call Management</span>
+                </a>
+                <a href="#customers" class="menu-item" data-target="customers-panel">
+                    <span class="menu-icon">👥</span>
+                    <span>Customers</span>
+                </a>
+                <a href="#templates" class="menu-item" data-target="templates-panel">
+                    <span class="menu-icon">📝</span>
+                    <span>Response Templates</span>
+                </a>
+                <a href="#settings" class="menu-item" data-target="settings-panel">
+                    <span class="menu-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <!-- Dashboard Overview Panel -->
+            <div class="admin-panel active" id="dashboard-panel">
+                <h2>Dashboard Overview</h2>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="emailCount">0</div>
+                        <div class="stat-label">Pending Emails</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="chatCount">0</div>
+                        <div class="stat-label">Active Chats</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="callCount">0</div>
+                        <div class="stat-label">Call Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="customerCount">0</div>
+                        <div class="stat-label">Total Customers</div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-feed" id="activityFeed">
+                        <div class="loading-placeholder">Loading activity...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Management Panel -->
+            <div class="admin-panel" id="email-panel">
+                <h2>Email Management</h2>
+                <div class="panel-actions">
+                    <button class="action-btn primary" onclick="checkEmails()">Check New Emails</button>
+                    <button class="action-btn" onclick="showEmailTemplates()">Email Templates</button>
+                    <button class="action-btn" onclick="showEmailSettings()">Email Settings</button>
+                </div>
+                <div class="email-list" id="emailList">
+                    <div class="loading-placeholder">Loading emails...</div>
+                </div>
+            </div>
+
+            <!-- Chat Management Panel -->
+            <div class="admin-panel" id="chat-panel">
+                <h2>Chat Management</h2>
+                <div class="panel-actions">
+                    <button class="action-btn primary" id="toggleChatBtn" onclick="toggleChatAvailability()">Set Unavailable</button>
+                    <button class="action-btn" onclick="showChatTemplates()">Quick Responses</button>
+                    <button class="action-btn" onclick="showChatSettings()">Chat Settings</button>
+                </div>
+                <div class="chat-conversations" id="chatConversations">
+                    <div class="loading-placeholder">Loading conversations...</div>
+                </div>
+            </div>
+
+            <!-- Call Management Panel -->
+            <div class="admin-panel" id="calls-panel">
+                <h2>Call Management</h2>
+                <div class="panel-actions">
+                    <button class="action-btn primary" id="toggleVoipBtn" onclick="toggleVoipService()">Start VOIP Service</button>
+                    <button class="action-btn" onclick="testTTS()">Test TTS</button>
+                    <button class="action-btn" onclick="showCallbackRequests()">View Callbacks</button>
+                </div>
+                <div class="call-history-container">
+                    <h3>Active Calls</h3>
+                    <div class="active-calls" id="activeCalls">
+                        <div class="no-data-message">No active calls</div>
+                    </div>
+                    
+                    <h3>Recent Calls</h3>
+                    <div class="call-history" id="callHistory">
+                        <div class="loading-placeholder">Loading call history...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Panel -->
+            <div class="admin-panel" id="customers-panel">
+                <h2>Customer Management</h2>
+                <div class="panel-actions">
+                    <button class="action-btn primary" onclick="refreshCustomers()">Refresh</button>
+                    <button class="action-btn" onclick="exportCustomers()">Export Data</button>
+                </div>
+                <div class="customers-table-container">
+                    <table class="customers-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Source</th>
+                                <th>First Contact</th>
+                                <th>Last Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <tr>
+                                <td colspan="7" class="loading-placeholder">Loading customers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Templates Panel -->
+            <div class="admin-panel" id="templates-panel">
+                <h2>Response Templates</h2>
+                <div class="templates-tabs">
+                    <button class="tab-btn active" data-target="emailTemplates">Email Templates</button>
+                    <button class="tab-btn" data-target="chatTemplates">Chat Templates</button>
+                    <button class="tab-btn" data-target="callTemplates">Call Scripts</button>
+                </div>
+                
+                <div class="templates-content active" id="emailTemplates">
+                    <div class="template-actions">
+                        <button class="action-btn primary" onclick="createEmailTemplate()">Create New Template</button>
+                    </div>
+                    <div class="templates-list" id="emailTemplatesList">
+                        <div class="loading-placeholder">Loading email templates...</div>
+                    </div>
+                </div>
+                
+                <div class="templates-content" id="chatTemplates">
+                    <div class="template-actions">
+                        <button class="action-btn primary" onclick="createChatTemplate()">Create New Response</button>
+                    </div>
+                    <div class="templates-list" id="chatTemplatesList">
+                        <div class="loading-placeholder">Loading chat templates...</div>
+                    </div>
+                </div>
+                
+                <div class="templates-content" id="callTemplates">
+                    <div class="template-actions">
+                        <button class="action-btn primary" onclick="createCallTemplate()">Create New Script</button>
+                    </div>
+                    <div class="templates-list" id="callTemplatesList">
+                        <div class="loading-placeholder">Loading call scripts...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="admin-panel" id="settings-panel">
+                <h2>Assistant Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>General Settings</h3>
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label for="assistantName">Assistant Name</label>
+                            <input type="text" id="assistantName" value="SoftAIDev Assistant">
+                        </div>
+                        <div class="form-group">
+                            <label for="responseTone">Response Tone</label>
+                            <select id="responseTone">
+                                <option value="professional">Professional</option>
+                                <option value="friendly">Friendly</option>
+                                <option value="casual">Casual</option>
+                                <option value="formal">Formal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Automation Settings</h3>
+                    <div class="settings-form">
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="autoEmailReply" checked>
+                            <label for="autoEmailReply">Enable automatic email replies</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label for="autoEmailForward">
+                                <input type="checkbox" id="autoEmailForward">
+                                Forward important emails to:
+                            </label>
+                            <input type="email" id="forwardEmail" value="reggie@softaidev.com">
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="autoChatGreeting" checked>
+                            <label for="autoChatGreeting">Send automatic chat greetings</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="autoCallbackRequest">
+                            <label for="autoCallbackRequest">Create callback requests for missed calls</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Privacy & Security</h3>
+                    <div class="settings-form">
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="storeCustomerData" checked>
+                            <label for="storeCustomerData">Store customer contact information</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="logConversations" checked>
+                            <label for="logConversations">Log conversation history</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataRetention">Data Retention Period</label>
+                            <select id="dataRetention">
+                                <option value="30">30 days</option>
+                                <option value="60">60 days</option>
+                                <option value="90" selected>90 days</option>
+                                <option value="180">180 days</option>
+                                <option value="365">1 year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <button class="action-btn danger" onclick="clearAllData()">Clear All Data</button>
+                        <button class="action-btn" onclick="exportData()">Export Data</button>
+                    </div>
+                </div>
+                
+                <div class="settings-actions main">
+                    <button class="action-btn primary" onclick="saveSettings()">Save Settings</button>
+                    <button class="action-btn" onclick="resetSettings()">Reset to Default</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chat with Visitor</h3>
+                <span class="close" onclick="closeChatModal()">&times;</span>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button onclick="sendChatMessage()">Send</button>
+                <button onclick="suggestResponse()">AI Suggest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="templateModalTitle">Template</h3>
+                <span class="close" onclick="closeTemplateModal()">&times;</span>
+            </div>
+            <div class="template-modal-content" id="templateModalContent"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/services/supabaseService.js"></script>
+    <script type="module" src="js/services/assistantService.js"></script>
+    <script type="module" src="js/admin-dashboard.js"></script>
+</body>
+</html>

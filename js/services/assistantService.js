@@ -2,9 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
-const supabaseUrl = 'YOUR_SUPABASE_URL'; // Replace with your actual URL
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual key
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Get these values from your Supabase project settings
+const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || process.env.SUPABASE_URL || window.SUPABASE_URL;
+const supabaseKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
+
+// Fallback to development values if not set
+const finalSupabaseUrl = supabaseUrl || 'https://your-project-id.supabase.co';
+const finalSupabaseKey = supabaseKey || 'your-anon-key';
+
+const supabase = createClient(finalSupabaseUrl, finalSupabaseKey);
 
 export const assistantService = {
   // Chat History Management
@@ -269,28 +275,35 @@ export const assistantService = {
 
 // Email Service Integration
 export const emailService = {
-  // Send email via API (configure with your email service)
+  // Send email via Resend API through Supabase Edge Function
   async sendEmail({ to, from, subject, body, replyTo = null }) {
     try {
-      // Using EmailJS or similar service for GitHub Pages
+      // Prepare email data for the Resend API
       const emailData = {
         to_email: to,
-        from_email: from || 'customersupport@softaidev.com',
+        from_email: from || 'SoftAIDev Assistant <customersupport@softaidev.com>',
         subject: subject,
         message: body,
-        reply_to: replyTo
+        reply_to: replyTo || 'customersupport@softaidev.com'
       };
 
-      // Call Supabase Edge Function for email sending
+      console.log('Sending email via Supabase Edge Function:', emailData);
+
+      // Call Supabase Edge Function for email sending (uses Resend API internally)
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: emailData
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+      
+      console.log('Email sent successfully:', data);
       
       // Log email in database
       await assistantService.saveEmailRecord({
-        emailId: 'sent_' + Date.now(),
+        emailId: data?.email_id || 'sent_' + Date.now(),
         fromEmail: emailData.from_email,
         toEmail: to,
         subject: subject,
@@ -315,6 +328,20 @@ export const emailService = {
       });
       
       throw error;
+    }
+  },
+
+  // Check if email service is configured and available
+  async checkEmailServiceStatus() {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: { check: true }
+      });
+      
+      return { available: !error, error };
+    } catch (error) {
+      console.error('Email service check failed:', error);
+      return { available: false, error };
     }
   },
 

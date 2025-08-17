@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SoftAIDev Virtual Assistant Admin - Manage your virtual assistant settings">
+    <title>Virtual Assistant Admin - SoftAIDev</title>
+    <link rel="stylesheet" href="css/customer-assistant.css">
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://glplnybcdgbyajdgzjrr.supabase.co">
+    <link rel="preload" href="js/chat-handler.js" as="script">
+    <link rel="preload" href="js/auth.js" as="script">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/virtual-assistant.css">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    
+    <header class="support-header" role="banner">
+        <div class="header-container">
+            <div class="header-logo">
+                <h1>SoftAIDev</h1>
+                <p>Virtual Assistant Admin</p>
+            </div>
+            <nav class="header-actions" role="navigation" aria-label="Main Navigation">
+                <a href="index.html" class="header-link">Home</a>
+                <a href="services.html" class="header-link">Services</a>
+                <a href="contact.html" class="header-link">Contact</a>
+                <a href="admin-dashboard.html" class="header-link">Admin Dashboard</a>
+                <a href="virtual-assistant.html" class="header-link">Public View</a>
+                <a href="#" class="header-link" id="logout-link">Logout</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main id="main-content" role="main">
+        <!-- Navigation Bar -->
+        <nav style="background: #1a237e; padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                <a href="admin-dashboard.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">
+                    <img src="https://via.placeholder.com/30" alt="Logo" style="vertical-align: middle; margin-right: 10px;">
+                    SoftAIDev Admin
+                </a>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                    <a href="admin-dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s;">Dashboard</a>
+                    <a href="virtual-assistant-admin.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; background: rgba(255,255,255,0.2);">Assistant Admin</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <header class="assistant-header">
+                <h1>🤖 Virtual Assistant Control Center</h1>
+                <p>Manage email, chat, and VOIP communications from one unified interface</p>
+            </header>
+
+            <!-- Assistant Status Panel -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-indicator active" id="assistant-status"></span>
+                    <span>Assistant Status: <strong id="status-text">Online</strong></span>
+                </div>
+                <div class="status-item">
+                    <span>Active Conversations: <strong id="active-conversations">0</strong></span>
+                </div>
+                <div class="status-item">
+                    <span>Pending Emails: <strong id="pending-emails">0</strong></span>
+                </div>
+                <div class="panel-content">
+                    <div class="settings-group">
+                        <h4>Response Style</h4>
+                        <select id="response-tone" onchange="updateResponseTone()">
+                            <option value="professional">Professional</option>
+                            <option value="friendly">Friendly</option>
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                        </select>
+                    </div>
+                    <div class="settings-group">
+                        <h4>Auto-Reply Settings</h4>
+                        <label>
+                            <input type="checkbox" id="auto-email-reply" checked>
+                            Enable auto email replies
+                        </label>
+                        <label>
+                            <input type="checkbox" id="auto-chat-greeting" checked>
+                            Send automatic chat greetings
+                        </label>
+                    </div>
+                    <div class="settings-group">
+                        <h4>Privacy & Security</h4>
+                        <button class="btn-secondary" onclick="showPrivacySettings()">Privacy Settings</button>
+                        <button class="btn-secondary" onclick="exportData()">Export Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversation History Panel -->
+        <div class="conversation-history">
+            <h3>📋 Recent Activity</h3>
+            <div class="activity-feed" id="activity-feed">
+                <div class="activity-item">
+                    <span class="activity-time">Just now</span>
+                    <span class="activity-type system">System</span>
+                    <span class="activity-description">Virtual Assistant initialized and ready</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-time">2:45 PM</span>
+                    <span class="activity-type email">Email</span>
+                    <span class="activity-description">Auto-replied to customer inquiry</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-time">2:30 PM</span>
+                    <span class="activity-type chat">Chat</span>
+                    <span class="activity-description">Assisted visitor with product questions</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-time">2:15 PM</span>
+                    <span class="activity-type call">Call</span>
+                    <span class="activity-description">Handled support call - 3:45 duration</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" class="modal" role="dialog" aria-labelledby="chat-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="chat-modal-title">Chat with Visitor</h3>
+                <span class="close" onclick="closeChatModal()" aria-label="Close">&times;</span>
+            </div>
+            <div class="chat-messages" id="chat-messages" aria-live="polite"></div>
+            <div class="chat-input-area">
+                <label for="chat-input" class="sr-only">Type your message</label>
+                <input type="text" id="chat-input" placeholder="Type your message..." aria-label="Type your message">
+                <button onclick="sendChatMessage()" aria-label="Send message">Send</button>
+                <button onclick="suggestResponse()" aria-label="Get AI suggestion">AI Suggest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Template Modal -->
+    <div id="email-template-modal" class="modal" role="dialog" aria-labelledby="email-template-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="email-template-modal-title">Email Templates</h3>
+                <span class="close" onclick="closeEmailTemplateModal()" aria-label="Close">&times;</span>
+            </div>
+            <div class="template-list">
+                <div class="template-item" onclick="useTemplate('customer-service')" tabindex="0" role="button">
+                    <h4>Customer Service Response</h4>
+                    <p>Professional response template for customer inquiries</p>
+                </div>
+                <div class="template-item" onclick="useTemplate('technical-support')" tabindex="0" role="button">
+                    <h4>Technical Support</h4>
+                    <p>Template for technical assistance requests</p>
+                </div>
+                <div class="template-item" onclick="useTemplate('sales-inquiry')" tabindex="0" role="button">
+                    <h4>Sales Inquiry</h4>
+                    <p>Response template for sales and pricing questions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add screen reader only styles -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
+    <script type="module" src="js/services/supabaseService.js"></script>
+    <script type="module" src="js/services/assistantService.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script src="js/virtual-assistant-admin.js"></script>
+    <script type="module" src="js/email-handler.js"></script>
+    <script type="module" src="js/chat-handler.js"></script>
+    <script src="js/voip-handler.js"></script>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const { isAdmin, session, error } = await checkAdminAuth();
+                
+                if (!isAdmin || error) {
+                    // Redirect to login if not admin
+                    window.location.href = 'admin-login.html?redirect=virtual-assistant-admin.html';
+                    return;
+                }
+                
+                // Set up logout functionality
+                document.getElementById('logout-link').addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = 'admin-login.html';
+                });
+                
+                // Initialize the admin interface
+                initAdminInterface();
+                
+            } catch (error) {
+                console.error('Authentication error:', error);
+                window.location.href = 'admin-login.html';
+            }
+        });
+        
+        function initAdminInterface() {
+            // Admin interface initialization code
+            console.log('Admin interface initialized');
+        }
+    </script>
+</body>
+</html>

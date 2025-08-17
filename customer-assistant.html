@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SoftAIDev Customer Support - Get help via chat, email, or request a callback">
+    <title>SoftAIDev Customer Support</title>
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://glplnybcdgbyajdgzjrr.supabase.co">
+    <!-- Preload critical resources -->
+    <link rel="preload" href="js/services/supabaseService.js" as="script">
+    <link rel="preload" href="js/services/assistantService.js" as="script">
+    <link rel="preload" href="js/customer-assistant.js" as="script">
+    <!-- Fonts and styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/customer-assistant.css">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    
+    <!-- Header -->
+    <header class="support-header" role="banner">
+        <div class="header-container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/30" alt="SoftAIDev Logo">
+                <span>SoftAIDev Support</span>
+            </div>
+            <nav class="header-actions" role="navigation" aria-label="Main Navigation">
+                <a href="index.html" class="header-link">Home</a>
+                <a href="services.html" class="header-link">Services</a>
+                <a href="contact.html" class="header-link">Contact</a>
+                <a href="admin-login.html" class="header-link">Admin Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="support-container" role="main">
+        <div class="support-card">
+            <div class="support-header">
+                <h1>How can we help you today?</h1>
+                <p>Our support team is here to assist you with any questions or issues.</p>
+            </div>
+
+            <!-- Support Tabs -->
+            <div class="support-tabs" role="tablist" aria-label="Support Options">
+                <button class="tab-button active" id="chat-button" data-tab="chat-tab" role="tab" aria-selected="true" aria-controls="chat-tab">
+                    <span class="tab-icon" aria-hidden="true">💬</span>
+                    <span class="tab-label">Live Chat</span>
+                </button>
+                <button class="tab-button" id="email-button" data-tab="email-tab" role="tab" aria-selected="false" aria-controls="email-tab">
+                    <span class="tab-icon" aria-hidden="true">📧</span>
+                    <span class="tab-label">Email Support</span>
+                </button>
+                <button class="tab-button" id="call-button" data-tab="call-tab" role="tab" aria-selected="false" aria-controls="call-tab">
+                    <span class="tab-icon" aria-hidden="true">📞</span>
+                    <span class="tab-label">Request Call</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content-container">
+                <!-- Chat Tab -->
+                <div class="tab-content active" id="chat-tab" role="tabpanel" aria-labelledby="chat-button">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages" aria-live="polite">
+                            <div class="chat-message assistant">
+                                <div class="message-bubble">
+                                    <p>Hello! Welcome to SoftAIDev support. How can I assist you today?</p>
+                                </div>
+                                <div class="message-time">Just now</div>
+                                <span class="sr-only">Message from assistant</span>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <label for="chatInput" class="sr-only">Type your message</label>
+                            <input type="text" id="chatInput" placeholder="Type your message here..." class="chat-input" aria-label="Type your message">
+                            <button id="sendChatBtn" class="send-button" aria-label="Send message">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Tab -->
+                <div class="tab-content" id="email-tab" role="tabpanel" aria-labelledby="email-button" hidden>
+                    <div class="email-form">
+                        <div class="form-group required">
+                            <label for="emailName">Your Name</label>
+                            <input type="text" id="emailName" class="form-input" required aria-required="true">
+                            <div class="invalid-feedback">Please enter your name</div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="emailAddress">Your Email</label>
+                            <input type="email" id="emailAddress" class="form-input" required aria-required="true" autocomplete="email">
+                            <div class="invalid-feedback">Please enter a valid email address</div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="emailSubject">Subject</label>
+                            <input type="text" id="emailSubject" class="form-input" required aria-required="true">
+                            <div class="invalid-feedback">Please enter a subject</div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="emailMessage">Message</label>
+                            <textarea id="emailMessage" rows="6" class="form-textarea" required aria-required="true"></textarea>
+                            <div class="invalid-feedback">Please enter your message</div>
+                        </div>
+                        <div class="form-actions">
+                            <button id="sendEmailBtn" class="primary-button" aria-label="Send email message">Send Email</button>
+                        </div>
+                        <div id="emailStatus" class="status-message" aria-live="polite"></div>
+                    </div>
+                </div>
+
+                <!-- Call Tab -->
+                <div class="tab-content" id="call-tab" role="tabpanel" aria-labelledby="call-button" hidden>
+                    <div class="call-options">
+                        <div class="call-option">
+                            <div class="call-option-header">
+                                <div class="call-icon" aria-hidden="true">📞</div>
+                                <h3>Request a Callback</h3>
+                            </div>
+                            <p>Leave your details and we'll call you back as soon as possible.</p>
+                            <div class="form-group required">
+                                <label for="callbackName">Your Name</label>
+                                <input type="text" id="callbackName" class="form-input" required aria-required="true">
+                                <div class="invalid-feedback">Please enter your name</div>
+                            </div>
+                            <div class="form-group required">
+                                <label for="callbackPhone">Phone Number</label>
+                                <input type="tel" id="callbackPhone" class="form-input" required aria-required="true" autocomplete="tel" placeholder="+1 (234) 567-890">
+                                <div class="invalid-feedback">Please enter a valid phone number</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="callbackReason">Reason for Call</label>
+                                <select id="callbackReason" class="form-select" aria-label="Select reason for callback">
+                                    <option value="general">General Inquiry</option>
+                                    <option value="technical">Technical Support</option>
+                                    <option value="sales">Sales Information</option>
+                                    <option value="billing">Billing Question</option>
+                                </select>
+                            </div>
+                            <button id="requestCallbackBtn" class="primary-button" aria-label="Submit callback request">Request Callback</button>
+                            <div id="callbackStatus" class="status-message" aria-live="polite"></div>
+                        </div>
+
+                        <div class="call-option">
+                            <div class="call-option-header">
+                                <div class="call-icon" aria-hidden="true">🔊</div>
+                                <h3>Call Us Directly</h3>
+                            </div>
+                            <p>Speak with our support team right away.</p>
+                            <div class="direct-call-info">
+                                <div class="phone-number"><a href="tel:360-972-1924" aria-label="Call our support team at 360-972-1924">360-972-1924</a></div>
+                                <div class="call-hours">
+                                    <h4 class="sr-only">Support Hours</h4>
+                                    <p>Monday - Friday: 9AM - 6PM PST</p>
+                                    <p>Saturday: 10AM - 2PM PST</p>
+                                    <p>Sunday: Closed</p>
+                                </div>
+                            </div>
+                            <button id="startVoipCallBtn" class="secondary-button" aria-label="Start a VOIP call with our support team">Start VOIP Call</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Chat Status Indicator -->
+    <div class="chat-status-indicator" id="chatStatusIndicator">
+        <div class="status-dot online"></div>
+        <span class="status-text">Support Online</span>
+    </div>
+
+    <!-- VOIP Call Modal -->
+    <div class="modal" id="voipCallModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>VOIP Call</h3>
+                <button class="close-button" id="closeVoipModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="call-status-container">
+                    <div class="call-animation">
+                        <div class="call-wave"></div>
+                        <div class="call-wave"></div>
+                        <div class="call-wave"></div>
+                    </div>
+                    <div class="call-status" id="callStatus">Connecting...</div>
+                    <div class="call-timer" id="callTimer">00:00</div>
+                </div>
+                <div class="call-controls">
+                    <button class="call-control-btn mute" id="muteCallBtn">
+                        <span class="control-icon">🔇</span>
+                        <span class="control-label">Mute</span>
+                    </button>
+                    <button class="call-control-btn end-call" id="endCallBtn">
+                        <span class="control-icon">📵</span>
+                        <span class="control-label">End Call</span>
+                    </button>
+                    <button class="call-control-btn speaker" id="speakerCallBtn">
+                        <span class="control-icon">🔊</span>
+                        <span class="control-label">Speaker</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="successTitle">Success</h3>
+                <button class="close-button" id="closeSuccessModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">✓</div>
+                <p id="successMessage">Your request has been submitted successfully.</p>
+                <button class="primary-button" id="successOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add screen reader only styles -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        .status-message {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .status-message.success {
+            background-color: rgba(33, 136, 56, 0.1);
+            color: var(--success-color);
+            border-left: 3px solid var(--success-color);
+        }
+        
+        .status-message.error {
+            background-color: rgba(200, 35, 51, 0.1);
+            color: var(--danger-color);
+            border-left: 3px solid var(--danger-color);
+        }
+    </style>
+    
+    <!-- Load scripts with defer to improve page load performance -->
+    <script type="module" src="js/services/supabaseService.js" defer></script>
+    <script type="module" src="js/services/assistantService.js" defer></script>
+    <script type="module" src="js/customer-assistant.js" defer></script>
+    
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching functionality with accessibility improvements
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Update tab button states
+                    tabButtons.forEach(btn => {
+                        btn.setAttribute('aria-selected', 'false');
+                        btn.classList.remove('active');
+                    });
+                    button.setAttribute('aria-selected', 'true');
+                    button.classList.add('active');
+                    
+                    // Show the selected panel, hide others
+                    tabContents.forEach(panel => {
+                        if (panel.id === tabId) {
+                            panel.hidden = false;
+                            panel.classList.add('active');
+                        } else {
+                            panel.hidden = true;
+                            panel.classList.remove('active');
+                        }
+                    });
+                });
+                
+                // Handle keyboard navigation for tabs
+                button.addEventListener('keydown', (e) => {
+                    const tabs = Array.from(tabButtons);
+                    const index = tabs.indexOf(button);
+                    
+                    // Handle arrow keys
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        const nextTab = tabs[(index + 1) % tabs.length];
+                        nextTab.focus();
+                        nextTab.click();
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const prevTab = tabs[(index - 1 + tabs.length) % tabs.length];
+                        prevTab.focus();
+                        prevTab.click();
+                    }
+                });
+            });
+            
+            // Form validation enhancement
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Show validation messages
+                        const inputs = form.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            if (!input.validity.valid) {
+                                input.classList.add('is-invalid');
+                            } else {
+                                input.classList.remove('is-invalid');
+                            }
+                        });
+                        
+                        // Focus the first invalid field
+                        const firstInvalid = form.querySelector('.is-invalid');
+                        if (firstInvalid) firstInvalid.focus();
+                    }
+                });
+                
+                // Clear validation styling on input
+                const inputs = form.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        if (input.validity.valid) {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

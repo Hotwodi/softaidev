@@ -366,40 +366,51 @@ Phone: 360-972-1924`
         // Send via email service if available
         if (this.supabaseEnabled && typeof emailService !== 'undefined') {
             try {
-                await emailService.sendAutoReply({
+                // Check if email service is available
+                const { available } = await emailService.checkEmailServiceStatus();
+                
+                if (!available) {
+                    console.warn('Email service is not available. Using fallback method.');
+                    this.showNotification('Email service is currently unavailable. Please try again later.', 'warning');
+                    return;
+                }
+                
+                // Determine email type for appropriate template
+                const emailType = this.determineEmailType(email);
+                
+                // Extract customer name from email
+                const customerName = email.from.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                // Send auto-reply using the email service
+                const result = await emailService.sendAutoReply({
                     originalEmail: email.from,
-                    customerName: email.from.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                    emailType: this.determineEmailType(email)
+                    customerName: customerName,
+                    emailType: emailType
                 });
                 
-                // Save to Supabase
-                await assistantService.saveEmailRecord({
-                    emailId: 'reply_' + Date.now(),
-                    fromEmail: 'customersupport@softaidev.com',
-                    toEmail: email.from,
-                    subject: 'Re: ' + email.subject,
-                    body: 'Auto-reply sent via virtual assistant',
-                    emailType: 'auto_reply',
-                    status: 'sent'
-                });
+                console.log('Auto-reply sent successfully:', result);
                 
                 // Save customer info
                 await assistantService.saveCustomerInfo({
                     email: email.from,
-                    name: email.from.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                    source: 'email'
+                    name: customerName,
+                    phone: null,
+                    source: 'email',
+                    notes: `Auto-replied to email with subject: ${email.subject}`
                 });
                 
+                this.showNotification('Reply sent successfully!', 'success');
             } catch (error) {
                 console.error('Failed to send email via service:', error);
+                this.showNotification('Failed to send email. Please try again later.', 'error');
             }
+        } else {
+            console.warn('Email service not available. Using simulated reply.');
+            this.showNotification('Email service not configured. This is a simulation.', 'warning');
         }
         
         this.updateEmailDisplay();
         this.addActivity('email', `Sent reply to ${email.from}`);
-        
-        // Show success notification
-        this.showNotification('Reply sent successfully!', 'success');
     }
 
     async autoReply(emailId) {
@@ -470,25 +481,54 @@ Phone: 360-972-1924`
 
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
+        
+        // Set background color based on notification type
+        let bgColor;
+        switch(type) {
+            case 'success':
+                bgColor = '#4caf50';
+                break;
+            case 'error':
+                bgColor = '#f44336';
+                break;
+            case 'warning':
+                bgColor = '#ff9800';
+                break;
+            default:
+                bgColor = '#2196f3';
+        }
+        
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#4caf50' : '#2196f3'};
+            background: ${bgColor};
             color: white;
             padding: 1rem;
             border-radius: 8px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
             z-index: 3000;
             animation: slideIn 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
         `;
         notification.textContent = message;
         
+        // Add ARIA attributes for accessibility
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'assertive');
+        
         document.body.appendChild(notification);
         
+        // Remove notification after delay
         setTimeout(() => {
-            notification.remove();
-        }, 3000);
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }, 4000);
     }
 }
 
