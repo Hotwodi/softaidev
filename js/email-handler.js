@@ -206,7 +206,7 @@ Phone: 360-972-1924`
                 await assistantService.saveEmailRecord({
                     emailId: newEmail.id.toString(),
                     fromEmail: newEmail.from,
-                    toEmail: 'customersupport@softaidev.com',
+                    toEmail: 'customer.support@softaidev.com',
                     subject: newEmail.subject,
                     body: newEmail.body,
                     emailType: 'incoming',
@@ -232,6 +232,27 @@ Phone: 360-972-1924`
             setTimeout(async () => {
                 await this.autoReply(newEmail.id);
             }, 2000);
+        }
+    }
+
+    async sendEmail(to, subject, html, cc = []) {
+        try {
+            const response = await fetch('https://hotwodi.github.io/softaidev/.netlify/functions/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to,
+                    subject,
+                    html,
+                    cc
+                })
+            });
+            const result = await response.json();
+            console.log('Email sent:', result);
+        } catch (error) {
+            console.error('Failed to send email:', error);
         }
     }
 
@@ -382,12 +403,9 @@ Phone: 360-972-1924`
                 const customerName = email.from.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
                 // Send auto-reply using the email service
-                const result = await emailService.sendAutoReply({
-                    originalEmail: email.from,
-                    customerName: customerName,
-                    emailType: emailType
-                });
+                const response = await this.sendEmail(email.from, `Re: ${email.subject}`, this.templates[emailType].body, ['customer.support@softaidev.com']);
                 
+                console.log('Auto-reply sent successfully:', response);
                 console.log('Auto-reply sent successfully:', result);
                 
                 // Save customer info

@@ -53,7 +53,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'onboarding@resend.dev',
         to: 'customer.support@softaidev.com',
-        bcc: 'your-personal@email.com',  // Add your personal email here
+        bcc: 'hotwodi@gmail.com',  // Add your personal email here
         subject,
         html
       }),
