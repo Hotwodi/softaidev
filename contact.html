@@ -77,7 +77,7 @@
     </form>
     <div id="contact-status" style="display:none; margin-top:1rem; padding:1rem; border-radius:4px;"></div>
     <div class="info">
-      <p>Email: customersupport@softaidev.com</p>
+      <p>Email: customer.support@softaidev.com</p>
       <p>Location: Remote • Worldwide</p>
     </div>
     
@@ -94,23 +94,11 @@
         
         try {
             // Get form data
-            const name = document.getElementById('contact-name').value;
-            const email = document.getElementById('contact-email').value;
-            const message = document.getElementById('contact-message').value;
-            
-            // Format the email content as HTML
-            const emailHtml = `
-                <h2>New Contact Form Submission</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Message:</strong></p>
-                <p>${message.replace(/\n/g, '<br>')}</p>
-            `;
-            
-            // Prepare data for Supabase function
-            const emailData = {
-                subject: 'New Contact Form Submission',
-                html: emailHtml
+            const formData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                message: document.getElementById('contact-message').value,
+                subject: 'New Contact Form Submission'
             };
             
             // Send email using the Supabase function
@@ -120,7 +108,7 @@
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdieWFqZGd6anJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMjMxOTQsImV4cCI6MjA3MDY5OTE5NH0.w8h4GWoJ1oOsxEAsol2Y3P5d6cmI46RoE4rs0iFFcoY'
                 },
-                body: JSON.stringify(emailData)
+                body: JSON.stringify(formData)
             });
             
             const result = await response.json();
@@ -142,7 +130,7 @@
             statusDiv.style.display = 'block';
             statusDiv.style.backgroundColor = '#f8d7da';
             statusDiv.style.color = '#721c24';
-            statusDiv.textContent = 'Error sending message. Please try again or email us directly at customersupport@softaidev.com';
+            statusDiv.textContent = 'Error sending message. Please try again or email us directly at customer.support@softaidev.com';
         } finally {
             // Re-enable submit button
             submitBtn.disabled = false;

@@ -36,7 +36,31 @@ serve(async (req) => {
       throw new Error('Invalid JSON in request body');
     }
 
-    const { subject = 'Test Email', html = '<h1>Hello from SoftAIDev!</h1>' } = requestBody;
+    // Handle different request formats from various frontend components
+    let subject = 'Test Email';
+    let html = '<h1>Hello from SoftAIDev!</h1>';
+    
+    // Format 1: Direct subject and html fields
+    if (requestBody.subject) subject = requestBody.subject;
+    if (requestBody.html) html = requestBody.html;
+    
+    // Format 2: Old format with message field
+    if (requestBody.message && !requestBody.html) {
+      html = `<p>${requestBody.message.replace(/\n/g, '<br>')}</p>`;
+    }
+    
+    // Format 3: Contact form with name, email, message fields
+    if (requestBody.name && requestBody.email && requestBody.message) {
+      subject = requestBody.subject || 'New Contact Form Submission';
+      html = `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${requestBody.name}</p>
+        <p><strong>Email:</strong> ${requestBody.email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${requestBody.message.replace(/\n/g, '<br>')}</p>
+      `;
+    }
+    
     console.log('Processing email with subject:', subject);
 
     // Hardcoded Resend API key
