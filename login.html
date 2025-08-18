@@ -52,6 +52,11 @@
             border-radius: 4px;
         }
     </style>
+
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
 </head>
 <body>
     <div class="auth-container">
@@ -71,33 +76,105 @@
         </form>
         <div class="auth-links">
             <p>Don't have an account? <a href="signup.html">Sign up</a></p>
-            <p><a href="forgot-password.html">Forgot password?</a></p>
+            <p><a href="forgot-password.html" class="forgot-password-link">
+                <i class="fas fa-question-circle"></i> Forgot password?
+            </a></p>
         </div>
     </div>
 
     <script type="module">
-        import { signIn } from './js/auth.js';
+        import { auth } from './js/supabaseClient.js';
         
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
             const errorElement = document.getElementById('errorMessage');
+            const successElement = document.createElement('div');
+            successElement.className = 'success-message';
+            form.parentNode.insertBefore(successElement, form);
             
-            try {
-                const { data, error } = await signIn(email, password);
+            // Check for URL parameters for success messages
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            
+            if (message) {
+                showSuccess(decodeURIComponent(message));
+                // Clean up URL
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+            
+            // Form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                if (error) throw error;
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
                 
-                // Redirect to dashboard after successful login
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                errorElement.textContent = error.message;
+                try {
+                    // Show loading state
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                    
+                    // Clear previous messages
+                    hideMessages();
+                    
+                    // Attempt to sign in
+                    const { data, error } = await auth.signIn(email, password);
+                    
+                    if (error) throw error;
+                    
+                    // Check for stored redirect URL or default to dashboard
+                    const redirectUrl = localStorage.getItem('redirectAfterLogin') || 'dashboard.html';
+                    localStorage.removeItem('redirectAfterLogin');
+                    
+                    // Redirect to the intended page
+                    window.location.href = redirectUrl;
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError(error.message || 'Login failed. Please check your credentials.');
+                    
+                    // Reset button state
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                }
+            });
+            
+            function showSuccess(message) {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                successElement.style.color = '#4CAF50';
+                successElement.style.backgroundColor = '#e8f5e9';
+                errorElement.style.display = 'none';
+            }
+            
+            function showError(message) {
+                errorElement.textContent = message;
                 errorElement.style.display = 'block';
-                console.error('Login error:', error);
+                errorElement.style.color = '#f44336';
+                errorElement.style.backgroundColor = '#ffebee';
+                successElement.style.display = 'none';
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 10000);
+            }
+            
+            function hideMessages() {
+                errorElement.style.display = 'none';
+                successElement.style.display = 'none';
             }
         });
     </script>
+    
+    <!-- Add image handler script -->
+    <script src="js/image-handler.js" defer></script>
+
 </body>
 </html>

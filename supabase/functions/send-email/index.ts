@@ -1,9 +1,5 @@
 // @ts-ignore: Deno runtime
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-// @ts-ignore: Deno global
-declare const Deno: any
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,156 +7,97 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
-
   try {
-    const { to_email, from_email, subject, message, reply_to } = await req.json()
+    console.log('=== NEW REQUEST ===');
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // Email service configuration (using Resend API)
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    
-    if (!resendApiKey) {
-      throw new Error('RESEND_API_KEY not configured')
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
     }
 
-    // Send email via Resend API
-    const emailResponse = await fetch('https://api.resend.com/emails', {
+    // Verify Authorization
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      console.error('No Authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse request
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('Request body:', requestBody);
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
+      throw new Error('Invalid JSON in request body');
+    }
+
+    const { subject = 'Test Email', html = '<h1>Hello from SoftAIDev!</h1>' } = requestBody;
+    console.log('Processing email with subject:', subject);
+
+    // Hardcoded Resend API key
+    const resendApiKey = "re_SAUZzGpT_JrwW1d4jNinSwXwLovAR7xcp";
+    console.log('Using Resend API Key');
+
+    // Send email with BCC to your personal email
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: from_email || 'SoftAIDev Assistant <customersupport@softaidev.com>',
-        to: [to_email],
-        subject: subject,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(90deg, #1a237e 0%, #3949ab 100%); color: white; padding: 20px; text-align: center;">
-              <h2>SoftAIDev</h2>
-              <p>Software Consulting & Solutions</p>
-            </div>
-            <div style="padding: 20px; background: #f9f9f9;">
-              <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                ${message.replace(/\n/g, '<br>')}
-              </div>
-            </div>
-            <div style="background: #1a237e; color: white; padding: 15px; text-align: center; font-size: 0.9rem;">
-              <p>SoftAIDev - Expert Software Consulting</p>
-              <p>📧 customersupport@softaidev.com | 📞 360-972-1924</p>
-              <p>🌐 <a href="https://softaidev.github.io" style="color: #ffd600;">softaidev.github.io</a></p>
-            </div>
-          </div>
-        `,
-        reply_to: reply_to || 'customersupport@softaidev.com'
+        from: 'onboarding@resend.dev',
+        to: 'customer.support@softaidev.com',
+        bcc: 'your-personal@email.com',  // Add your personal email here
+        subject,
+        html
       }),
-    })
+    });
 
-    if (!emailResponse.ok) {
-      const errorData = await emailResponse.text()
-      throw new Error(`Email sending failed: ${errorData}`)
-    }
+    const result = await response.json();
+    console.log('Resend API response:', {
+      status: response.status,
+      statusText: response.statusText,
+      result
+    });
 
-    const emailResult = await emailResponse.json()
-
-    // Log email in Supabase
-    const { error: dbError } = await supabase
-      .from('email_history')
-      .insert([{
-        email_id: emailResult.id || 'sent_' + Date.now(),
-        from_email: from_email || 'customersupport@softaidev.com',
-        to_email: to_email,
-        subject: subject,
-        body: message,
-        email_type: 'outgoing',
-        status: 'sent',
-        timestamp: new Date().toISOString()
-      }])
-
-    if (dbError) {
-      console.error('Failed to log email in database:', dbError)
-    }
-
-    // Forward to customersupport@softaidev.com if not already sending from there
-    if (to_email !== 'customersupport@softaidev.com' && !from_email?.includes('customersupport@softaidev.com')) {
-      const forwardResponse = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'SoftAIDev Assistant <customersupport@softaidev.com>',
-          to: ['customersupport@softaidev.com'],
-          subject: `[ASSISTANT] ${subject}`,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: #ff9800; color: white; padding: 15px;">
-                <h3>🤖 Virtual Assistant Email Forward</h3>
-                <p><strong>Original Recipient:</strong> ${to_email}</p>
-                <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
-              </div>
-              <div style="padding: 20px; background: #f9f9f9;">
-                <div style="background: white; padding: 20px; border-radius: 8px;">
-                  <h4>Subject: ${subject}</h4>
-                  <hr>
-                  ${message.replace(/\n/g, '<br>')}
-                </div>
-              </div>
-            </div>
-          `,
-          reply_to: 'customersupport@softaidev.com'
-        }),
-      })
-
-      if (forwardResponse.ok) {
-        // Log forward email
-        await supabase
-          .from('email_history')
-          .insert([{
-            email_id: 'forward_' + Date.now(),
-            from_email: 'customersupport@softaidev.com',
-            to_email: 'customersupport@softaidev.com',
-            subject: `[ASSISTANT] ${subject}`,
-            body: `Forward of email sent to: ${to_email}\n\n${message}`,
-            email_type: 'forward',
-            status: 'sent',
-            timestamp: new Date().toISOString()
-          }])
-      }
+    if (!response.ok) {
+      throw new Error(result.message || `Failed to send email (${response.status})`);
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: 'Email sent successfully',
-        email_id: emailResult.id 
+        email_id: result.id
       }),
-      {
+      { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
-    )
+        status: 200
+      }
+    );
 
   } catch (error) {
-    console.error('Email function error:', error)
+    console.error('ERROR DETAILS:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      },
-    )
+      { 
+        status: error.message.includes('Missing') ? 400 : 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
-})
+});

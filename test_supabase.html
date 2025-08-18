@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        #log {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    
+    <div>
+        <h2>Configuration</h2>
+        <p>Supabase URL: <span id="supabaseUrl">Loading...</span></p>
+        <p>Anon Key: <span id="anonKey">Loading...</span></p>
+    </div>
+    
+    <div>
+        <h2>Test Results</h2>
+        <div id="testResults">
+            <p>Running tests...</p>
+        </div>
+    </div>
+    
+    <div>
+        <h2>Raw Response</h2>
+        <pre id="rawResponse">Waiting for test to complete...</pre>
+    </div>
+    
+    <div>
+        <h2>Log</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        // Configuration - these should match your .env file
+        const SUPABASE_URL = 'https://glplnybcdgbyajdgzjrr.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1d3F5eXl2ZGpncnphZ21zcWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTc3Mzk3NjgsImV4cCI6MjAzMzMxNTc2OH0.2qy4bRjvzzSh8YIsBeLzBYj1Nef0cOHqUORvbGpQ-kU';
+        
+        // DOM Elements
+        const supabaseUrlEl = document.getElementById('supabaseUrl');
+        const anonKeyEl = document.getElementById('anonKey');
+        const testResultsEl = document.getElementById('testResults');
+        const rawResponseEl = document.getElementById('rawResponse');
+        const logEl = document.getElementById('log');
+        
+        // Initialize UI
+        supabaseUrlEl.textContent = SUPABASE_URL;
+        anonKeyEl.textContent = SUPABASE_ANON_KEY ? 
+            SUPABASE_ANON_KEY.substring(0, 10) + '...' + SUPABASE_ANON_KEY.substring(SUPABASE_ANON_KEY.length - 10) : 
+            'Not set';
+        
+        // Log function
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `[${new Date().toISOString()}] ${message}`;
+            logEl.prepend(entry);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Test Supabase connection
+        async function testSupabase() {
+            log('Starting Supabase connection test...');
+            
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                const errorMsg = 'Missing Supabase URL or Anon Key in configuration';
+                log(errorMsg, 'error');
+                testResultsEl.innerHTML = `<p class="error">❌ ${errorMsg}</p>`;
+                return;
+            }
+            
+            try {
+                // Initialize the client
+                const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false,
+                        detectSessionInUrl: false
+                    }
+                });
+                
+                log('Supabase client initialized');
+                
+                // Test a simple query
+                log('Testing unauthenticated query...');
+                const { data, error } = await supabase
+                    .from('purchases')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    if (error.message.includes('JWT')) {
+                        log('✅ Unauthenticated query was blocked (expected)', 'success');
+                        testResultsEl.innerHTML += '<p class="success">✅ Unauthenticated query was blocked (expected)</p>';
+                    } else {
+                        throw error;
+                    }
+                } else {
+                    log(`✅ Success! Found ${data.length} records`, 'success');
+                    testResultsEl.innerHTML += `<p class="success">✅ Success! Found ${data.length} records</p>`;
+                }
+                
+                // Test authentication if credentials are available
+                const testEmail = 'test@example.com'; // Replace with your test email
+                const testPassword = 'testpassword'; // Replace with your test password
+                
+                if (testEmail && testPassword) {
+                    log('Testing authentication...');
+                    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                        email: testEmail,
+                        password: testPassword
+                    });
+                    
+                    if (authError) {
+                        log(`⚠️ Authentication failed: ${authError.message}`, 'warning');
+                        testResultsEl.innerHTML += `<p class="warning">⚠️ Authentication failed: ${authError.message}</p>`;
+                    } else {
+                        log(`✅ Authenticated as: ${authData.user.email}`, 'success');
+                        testResultsEl.innerHTML += `<p class="success">✅ Authenticated as: ${authData.user.email}</p>`;
+                        
+                        // Test authenticated query
+                        log('Testing authenticated query...');
+                        const { data: authQueryData, error: authQueryError } = await supabase
+                            .from('purchases')
+                            .select('*')
+                            .limit(1);
+                            
+                        if (authQueryError) {
+                            log(`❌ Authenticated query failed: ${authQueryError.message}`, 'error');
+                            testResultsEl.innerHTML += `<p class="error">❌ Authenticated query failed: ${authQueryError.message}</p>`;
+                        } else {
+                            log(`✅ Authenticated query successful. Found ${authQueryData.length} records`, 'success');
+                            testResultsEl.innerHTML += `<p class="success">✅ Authenticated query successful. Found ${authQueryData.length} records</p>`;
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                const errorMessage = error.message || 'Unknown error occurred';
+                log(`❌ Test failed: ${errorMessage}`, 'error');
+                testResultsEl.innerHTML = `<p class="error">❌ Test failed: ${errorMessage}</p>`;
+                rawResponseEl.textContent = JSON.stringify(error, null, 2);
+            }
+        }
+        
+        // Run the test when the page loads
+        document.addEventListener('DOMContentLoaded', testSupabase);
+    </script>
+    
+    <!-- Add image handler script -->
+    <script src="js/image-handler.js" defer></script>
+
+</body>
+</html>

@@ -217,6 +217,28 @@ class ChatHandler {
         
         this.updateChatDisplay();
         this.addActivity('chat', `Auto-greeted ${conversation.visitorName}`);
+        
+        // Check if this is an order status query
+        const isOrderQuery = await this.checkOrderStatus(conversation.messages[0].message, conversationId || 'default');
+        
+        // Only send default response if it's not an order query
+        if (!isOrderQuery) {
+            // Simulate bot response (in a real app, this would be an API call)
+            setTimeout(() => {
+                const botResponse = this.generateResponse(conversation.messages[0].message);
+                this.addMessage(conversation.container, 'assistant', botResponse, 'SoftAIDev Assistant');
+                
+                // Add bot response to conversation history
+                conversation.messages.push({
+                    sender: 'assistant',
+                    message: botResponse,
+                    timestamp: new Date()
+                });
+
+                // Auto-scroll to bottom of chat
+                conversation.container.scrollTop = conversation.container.scrollHeight;
+            }, 1000);
+        }
     }
 
     openChat(conversationId) {

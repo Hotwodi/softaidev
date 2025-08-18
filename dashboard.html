@@ -112,7 +112,143 @@
         .logout-btn:hover {
             background: #d32f2f;
         }
+        .purchases {
+            margin-top: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        .section-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .last-updated {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        .purchase-card {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .purchase-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .purchase-title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .order-id {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .purchase-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 0.75rem 0;
+        }
+        .detail-item {
+            font-size: 0.9rem;
+        }
+        .detail-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .purchase-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed #ddd;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            border: 1px solid #45a049;
+        }
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #555;
+        }
+        .btn-outline:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .loading-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
     </style>
+
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -125,9 +261,17 @@
             <button class="logout-btn" id="logoutBtn">Logout</button>
         </div>
 
-        <h2>My Purchased Apps</h2>
-        <div id="purchasesGrid" class="purchases-grid">
-            <div class="loading">Loading your purchases...</div>
+        <div class="purchases">
+            <div class="section-header">
+                <h2><i class="fas fa-shopping-bag"></i> Your Purchase History</h2>
+                <div class="last-updated" id="last-updated">Updated just now</div>
+            </div>
+            <div id="purchases-list" class="purchases-list">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your purchases...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -152,55 +296,122 @@
             loadPurchases();
         }
 
-        // Load user's purchases
+        // Load user's purchases with enhanced UI
         async function loadPurchases() {
-            const purchasesGrid = document.getElementById('purchasesGrid');
+            const purchasesList = document.getElementById('purchases-list');
+            if (!purchasesList) return;
+            
+            purchasesList.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your purchases...</p>
+                </div>
+            `;
             
             try {
                 const { data: purchases, error } = await getUserPurchases();
                 
-                if (error) throw error;
+                if (error) {
+                    throw new Error(error.message || 'Failed to load purchases');
+                }
                 
                 if (!purchases || purchases.length === 0) {
-                    purchasesGrid.innerHTML = `
-                        <div class="no-purchases">
-                            <h3>No Purchases Yet</h3>
-                            <p>Visit our <a href="marketplace.html">marketplace</a> to discover amazing apps!</p>
+                    purchasesList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h3>No purchases yet</h3>
+                            <p>Your purchased apps will appear here.</p>
+                            <a href="marketplace.html" class="btn btn-primary">
+                                <i class="fas fa-store"></i> Browse Marketplace
+                            </a>
                         </div>
                     `;
                     return;
                 }
                 
-                purchasesGrid.innerHTML = purchases.map(purchase => {
-                    const app = purchase.apps;
-                    const expiryDate = new Date(purchase.expiry_date);
-                    const daysUntilExpiry = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+                purchasesList.innerHTML = purchases.map(purchase => {
+                    const app = purchase.apps || {};
+                    const isExpired = purchase.is_expired;
+                    const statusClass = isExpired ? 'expired' : purchase.status;
                     
                     return `
-                        <div class="purchase-card">
+                        <div class="purchase-card ${isExpired ? 'expired' : ''}">
                             <div class="purchase-header">
-                                <img src="${app.icon_url || 'placeholder.png'}" alt="${app.name}" class="app-icon">
-                                <div class="purchase-info">
-                                    <h3>${app.name}</h3>
-                                    <p>Version ${app.version}</p>
+                                <h3 class="purchase-title">
+                                    ${app.name || 'Unknown App'}
+                                </h3>
+                                <span class="order-id">#${purchase.order_id || 'N/A'}</span>
+                            </div>
+                            
+                            <div class="purchase-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Order Date</div>
+                                    <div class="detail-value">${purchase.formatted_purchase_date || 'N/A'}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Expires</div>
+                                    <div class="detail-value ${isExpired ? 'text-danger' : ''}">
+                                        ${isExpired ? 'Expired' : purchase.days_remaining + ' days left'}
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Status</div>
+                                    <div class="detail-value">
+                                        <span class="status-badge status-${statusClass}">
+                                            ${purchase.status || 'N/A'}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Amount</div>
+                                    <div class="detail-value">
+                                        ${purchase.currency || '$'}${purchase.amount?.toFixed(2) || '0.00'}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="purchase-meta">
-                                <p>Purchased: ${new Date(purchase.purchase_date).toLocaleDateString()}</p>
-                                <p>Access expires in: <span class="expiry-date">${daysUntilExpiry} days</span></p>
+                            
+                            ${app.description ? `
+                                <div class="app-description">
+                                    <p>${app.description}</p>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="purchase-actions">
+                                <a href="${purchase.download_url || '#'}" 
+                                   class="btn btn-primary ${isExpired ? 'disabled' : ''}"
+                                   ${isExpired ? 'aria-disabled="true"' : ''}
+                                   ${!isExpired ? 'download' : ''}>
+                                    <i class="fas fa-download"></i> 
+                                    ${isExpired ? 'Download Expired' : 'Download Now'}
+                                </a>
+                                
+                                <button class="btn btn-outline" 
+                                        onclick="showOrderDetails('${purchase.order_id}')">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                                
+                                <button class="btn btn-icon" 
+                                        title="Copy Download Link"
+                                        onclick="copyToClipboard('${purchase.download_url || ''}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                             </div>
-                            <button class="download-btn" onclick="window.open('${app.download_url}', '_blank')">
-                                Download
-                            </button>
                         </div>
                     `;
                 }).join('');
                 
+                // Update last updated timestamp
+                updateLastUpdated();
+                
             } catch (error) {
                 console.error('Error loading purchases:', error);
-                purchasesGrid.innerHTML = `
-                    <div class="error-message">
-                        Failed to load purchases. Please try again later.
+                purchasesList.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load purchases. ${error.message || 'Please try again later.'}
                     </div>
                 `;
             }
@@ -214,8 +425,280 @@
             }
         });
 
+        // Listen for purchase events from other tabs/windows
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'purchase_completed') {
+                loadPurchases();
+            }
+        });
+
+        // Check URL for purchase success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('purchase') === 'success') {
+            // Clear the URL parameter
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = '🎉 Purchase completed successfully!';
+            document.querySelector('.dashboard-container').prepend(successMsg);
+            // Refresh purchases
+            loadPurchases();
+            // Remove message after 5 seconds
+            setTimeout(() => successMsg.remove(), 5000);
+        }
+
         // Initialize the dashboard
         init();
     </script>
+    <style>
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-pending {
+            background-color: #fff8e1;
+            color: #f57f17;
+        }
+        
+        .status-expired {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-refunded {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #ef5350;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        /* Text utilities */
+        .text-danger {
+            color: #d32f2f;
+        }
+        
+        .text-success {
+            color: #388e3c;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .btn-primary {
+            background-color: #4caf50;
+            color: white;
+            border-color: #43a047;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: #43a047;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border-color: #ddd;
+            color: #555;
+        }
+        
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            color: #666;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn.disabled,
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .purchase-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .purchase-actions {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                flex: 1 1 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+    
+    
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
+<script>
+    // Global functions for purchase actions
+    
+    // Show order details in a modal
+    window.showOrderDetails = function(orderId) {
+        // This would typically open a modal with detailed order information
+        alert('Order details for #' + orderId + ' would be shown here.');
+        // In a real implementation, you would fetch detailed order info and display it
+    };
+    
+    // Copy text to clipboard
+    window.copyToClipboard = function(text) {
+        if (!text) {
+            showToast('No download link available', 'error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Download link copied to clipboard!', 'success');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            showToast('Failed to copy link', 'error');
+        });
+    };
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type} fade-in`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Remove toast after delay
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+    
+    // Add toast styles if not already present
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            .toast {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #323232;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.3s, transform 0.3s;
+            }
+            
+            .toast.fade-in {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .toast.fade-out {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            
+            .toast-success {
+                background: #4caf50;
+            }
+            
+            .toast-error {
+                background: #f44336;
+            }
+            
+            .toast i {
+                font-size: 1.2em;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    </script>
+    
+    <!-- Add image handler script -->
+    <script src="js/image-handler.js" defer></script>
+
 </body>
 </html>

@@ -75,16 +75,58 @@ export async function signOut() {
   return { error };
 }
 
-// Get current user's purchases
+// Get current user's purchases with detailed order information
 export async function getUserPurchases() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { data: null, error: 'Not authenticated' };
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('Authentication error:', userError);
+      return { data: null, error: userError || 'Not authenticated' };
+    }
 
-  const { data, error } = await supabase
-    .from('purchases')
-    .select('*, apps(*)')
-    .eq('user_id', user.id)
-    .gte('expiry_date', new Date().toISOString());
+    const { data, error } = await supabase
+      .from('purchases')
+      .select(`
+        id,
+        order_id,
+        purchase_date,
+        expiry_date,
+        status,
+        amount,
+        currency,
+        download_url,
+        apps (
+          id,
+          name,
+          description,
+          version,
+          icon_url,
+          download_url
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('purchase_date', { ascending: false });
 
-  return { data, error };
+    if (error) {
+      console.error('Error fetching purchases:', error);
+      return { data: null, error };
+    }
+
+    // Process the data to include additional calculated fields
+    const processedData = (data || []).map(purchase => ({
+      ...purchase,
+      days_remaining: Math.ceil(
+        (new Date(purchase.expiry_date) - new Date()) / (1000 * 60 * 60 * 24)
+      ),
+      formatted_purchase_date: new Date(purchase.purchase_date).toLocaleDateString(),
+      formatted_expiry_date: new Date(purchase.expiry_date).toLocaleDateString(),
+      is_expired: new Date(purchase.expiry_date) < new Date(),
+      download_url: purchase.download_url || (purchase.apps?.download_url || '')
+    }));
+
+    return { data: processedData, error: null };
+  } catch (error) {
+    console.error('Unexpected error in getUserPurchases:', error);
+    return { data: null, error: error.message || 'An unexpected error occurred' };
+  }
 }

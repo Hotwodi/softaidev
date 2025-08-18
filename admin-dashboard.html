@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoftAIDev Admin Dashboard</title>
+    <style>
+        /* Added by update script */
+        body { position: relative; }
+    </style>
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,6 +47,10 @@
                 <a href="#dashboard" class="menu-item active" data-target="dashboard-panel">
                     <span class="menu-icon">📊</span>
                     <span>Dashboard</span>
+                </a>
+                <a href="#analytics" class="menu-item" data-target="analytics-panel">
+                    <span class="menu-icon">📈</span>
+                    <span>Analytics</span>
                 </a>
                 <a href="#email" class="menu-item" data-target="email-panel">
                     <span class="menu-icon">📧</span>
@@ -211,6 +224,68 @@
             </div>
 
             <!-- Settings Panel -->
+            <!-- Analytics Panel -->
+            <div class="admin-panel" id="analytics-panel">
+                <h2>Website Analytics</h2>
+                <div id="analytics-error" class="error-message" style="display: none;"></div>
+                
+                <div class="analytics-filters">
+                    <div class="filter-group">
+                        <label for="date-range">Date Range:</label>
+                        <select id="date-range" class="date-filter">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-visitors">-</div>
+                        <div class="stat-label">Total Visitors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="unique-visitors">-</div>
+                        <div class="stat-label">Unique Visitors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="page-views">-</div>
+                        <div class="stat-label">Page Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="conversion-rate">-</div>
+                        <div class="stat-label">Conversion Rate</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="analytics-row">
+                    <div class="chart-container">
+                        <h3>Page Views</h3>
+                        <div id="page-views-chart" class="chart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Visitor Locations</h3>
+                        <div id="location-map" class="chart"></div>
+                    </div>
+                </div>
+
+                <!-- Product Performance -->
+                <div class="analytics-row">
+                    <div class="chart-container full-width">
+                        <h3>Product Performance</h3>
+                        <div id="product-stats">
+                            <!-- Will be populated by JavaScript -->
+                            <p>Loading product statistics...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
             <div class="admin-panel" id="settings-panel">
                 <h2>Assistant Settings</h2>
                 
@@ -324,5 +399,17 @@
     <script type="module" src="js/services/supabaseService.js"></script>
     <script type="module" src="js/services/assistantService.js"></script>
     <script type="module" src="js/admin-dashboard.js"></script>
+    <!-- Add Supabase and Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/admin-analytics.js"></script>
+    <!-- Initialize analytics for the admin dashboard -->
+    <script>
+        // Add Supabase credentials to the page
+        document.body.dataset.supabaseUrl = 'YOUR_SUPABASE_URL';
+        document.body.dataset.supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+    </script>
+    <!-- Add image handler script -->
+    <script src="js/image-handler.js" defer></script>
+
 </body>
 </html>

@@ -108,44 +108,102 @@ def test_password_reset():
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
     
     try:
+        # First, ensure we have a valid session
+        try:
+            result = supabase.auth.sign_in_with_password({
+                'email': TEST_EMAIL,
+                'password': TEST_PASSWORD
+            })
+            print("Logged in with current password")
+        except Exception as e:
+            if "Invalid login credentials" in str(e):
+                print("Current password is invalid, but we'll proceed with reset")
+            else:
+                raise e
+        
+        # Request password reset
         print(f"Sending password reset email to {TEST_EMAIL}...")
-        result = supabase.auth.reset_password_for_email(TEST_EMAIL)
+        supabase.auth.reset_password_for_email(TEST_EMAIL, {
+            'redirectTo': 'http://localhost:8000/update-password.html'
+        })
         
-        print(f"Password reset email sent to {TEST_EMAIL}")
-        print("Please check your email and follow the password reset link.")
-        print("Note: In a real test, you would need to extract the reset link from the email.")
+        print("\n=== TEST INSTRUCTIONS ===")
+        print("1. Check your email for a password reset link")
+        print("2. Click the link to go to the password reset page")
+        print("3. Set a new password")
+        print("4. Return here to continue testing")
+        print("=======================\n")
         
-        # In a real test, you would:
-        # 1. Extract the reset link from the email
-        # 2. Simulate clicking the link
-        # 3. Submit a new password
+        input("Press Enter after you've reset your password to continue testing...")
         
-        return True
+        # Test login with new password
+        print("\nTesting login with new password...")
+        new_password = input("Enter the new password you set: ")
+        
+        result = supabase.auth.sign_in_with_password({
+            'email': TEST_EMAIL,
+            'password': new_password
+        })
+        
+        if result.user:
+            print("✅ Successfully logged in with new password!")
+            # Update the test password for subsequent tests
+            global TEST_PASSWORD
+            TEST_PASSWORD = new_password
+            return True
+        else:
+            print("❌ Failed to login with new password")
+            return False
         
     except Exception as e:
-        print(f"Password reset request failed: {str(e)}")
+        print(f"❌ Password reset test failed: {str(e)}")
+        return False
+
+def run_tests():
+    print("Starting authentication flow tests...")
+    tests_passed = 0
+    total_tests = 3
+    
+    # Test signup
+    print("\n" + "="*60)
+    print("RUNNING SIGNUP TEST")
+    print("="*60)
+    if test_signup():
+        tests_passed += 1
+    
+    # Test login
+    print("\n" + "="*60)
+    print("RUNNING LOGIN TEST")
+    print("="*60)
+    if test_login():
+        tests_passed += 1
+    
+    # Test password reset
+    print("\n" + "="*60)
+    print("RUNNING PASSWORD RESET TEST")
+    print("="*60)
+    if test_password_reset():
+        tests_passed += 1
+    
+    # Final results
+    print("\n" + "="*60)
+    print("TEST RESULTS")
+    print("="*60)
+    print(f"Tests passed: {tests_passed}/{total_tests}")
+    print("="*60)
+    
+    if tests_passed == total_tests:
+        print("✅ All tests completed successfully!")
+        return True
+    else:
+        print(f"❌ {total_tests - tests_passed} test(s) failed")
         return False
 
 if __name__ == "__main__":
-    print("Starting authentication flow tests...")
-    
-    # Test signup
-    if test_signup():
-        print("\n✅ Signup test completed successfully!")
-    else:
-        print("\n❌ Signup test failed.")
-    
-    # Test login
-    if test_login():
-        print("\n✅ Login test completed successfully!")
-    else:
-        print("\n❌ Login test failed.")
-    
-    # Test password reset
-    if test_password_reset():
-        print("\n✅ Password reset test initiated successfully!")
-        print("Please check your email to complete the password reset process.")
-    else:
-        print("\n❌ Password reset test failed.")
-    
-    print("\nTesting complete. Please check your email for verification and password reset links.")
+    try:
+        run_tests()
+    except KeyboardInterrupt:
+        print("\n\nTest execution cancelled by user.")
+    except Exception as e:
+        print(f"\n\nAn unexpected error occurred: {str(e)}")
+        raise

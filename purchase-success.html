@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Successful - Tutankaten Market Place</title>
+    <link rel="stylesheet" href="css/marketplace.css">
+    <style>
+        .purchase-success {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 72px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .download-button {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .download-button:hover {
+            background: #45a049;
+        }
+        .app-details {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            text-align: left;
+        }
+    </style>
+
+    <!-- Add Font Awesome for home icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add home button and image handling -->
+    <link rel="stylesheet" href="css/home-button.css">
+</head>
+<body>
+    <div class="purchase-success">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Purchase Successful!</h1>
+        <p>Thank you for your purchase. Your order has been confirmed and a receipt has been sent to your email.</p>
+        
+        <div class="order-summary" id="orderSummary" style="text-align: left; margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+            <h3>Order Summary</h3>
+            <p><strong>Order Number:</strong> <span id="orderNumber">Loading...</span></p>
+            <p><strong>Date:</strong> <span id="orderDate">${new Date().toLocaleString()}</span></p>
+            <div id="orderDetails">
+                <p>Loading order details...</p>
+            </div>
+        </div>
+        
+        <div class="app-details" id="appDetails">
+            <h3>Your Download</h3>
+            <p>Your download will start automatically. If it doesn't, use the button below.</p>
+        </div>
+        
+        <div class="action-buttons" style="margin: 30px 0;">
+            <a href="#" id="downloadBtn" class="download-button">
+                <i class="fas fa-download"></i> Download Now
+            </a>
+            <a href="dashboard.html" class="dashboard-button" style="display: inline-block; padding: 12px 24px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px; margin-left: 15px;">
+                <i class="fas fa-tachometer-alt"></i> View in Dashboard
+            </a>
+        </div>
+        
+        <div class="email-notice" style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+            <p><i class="fas fa-envelope"></i> We've sent a confirmation email with your order details and download link.</p>
+        </div>
+        
+        <div class="additional-info" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <h4>Need Help?</h4>
+            <p>If you have any questions about your order, please <a href="contact.html">contact our support team</a> and reference your order number.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    <script src="js/marketplace.js"></script>
+    <script type="module" src="js/emailService.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module">
+    import { PurchaseHandler } from './js/purchaseHandler.js';
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const appId = urlParams.get('app_id');
+        const status = urlParams.get('status');
+        
+        if (status === 'success' && appId) {
+            try {
+                // Initialize Supabase
+                const supabase = supabase.createClient(
+                    'YOUR_SUPABASE_URL',
+                    'YOUR_SUPABASE_ANON_KEY'
+                );
+                
+                // Initialize purchase handler
+                const purchaseHandler = new PurchaseHandler(supabase);
+                
+                // Process the purchase
+                const result = await purchaseHandler.processSuccessfulPurchase(appId);
+                
+                if (!result.success) {
+                    throw result.error || new Error('Failed to process purchase');
+                }
+                
+                // Show success message
+                console.log('Purchase processed successfully');
+                
+                // Auto-start download after a short delay
+                const downloadBtn = document.getElementById('downloadBtn');
+                if (downloadBtn && downloadBtn.href) {
+                    setTimeout(() => {
+                        window.location.href = downloadBtn.href;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error processing purchase:', error);
+                document.getElementById('appDetails').innerHTML = `
+                    <div class="error-message" style="color: #d32f2f; background: #ffebee; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        There was an error processing your purchase. Please contact support.
+                    </div>
+                `;
+            }
+        } else {
+            // Invalid URL parameters
+            document.getElementById('appDetails').innerHTML = `
+                <div class="error-message" style="color: #d32f2f; background: #ffebee; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Invalid purchase information. Please return to the marketplace and try again.
+                </div>
+            `;
+        }
+    });
+    </script>
+    
+    <!-- Add image handler script -->
+    <script src="js/image-handler.js" defer></script>
+
+</body>
+</html>
