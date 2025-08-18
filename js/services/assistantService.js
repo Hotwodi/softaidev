@@ -278,13 +278,13 @@ export const emailService = {
   // Send email via Resend API through Supabase Edge Function
   async sendEmail({ to, from, subject, body, replyTo = null }) {
     try {
-      // Prepare email data for the Resend API
+      // Format the email content as HTML if it's plain text
+      const emailHtml = body.startsWith('<') ? body : `<p>${body.replace(/\n/g, '<br>')}</p>`;
+      
+      // Prepare email data for the Supabase function
       const emailData = {
-        to_email: to,
-        from_email: from || 'SoftAIDev Assistant <customersupport@softaidev.com>',
         subject: subject,
-        message: body,
-        reply_to: replyTo || 'customersupport@softaidev.com'
+        html: emailHtml
       };
 
       console.log('Sending email via Supabase Edge Function:', emailData);
