@@ -81,7 +81,14 @@
       <p>Location: Remote • Worldwide</p>
     </div>
     
+    <!-- Add Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+    // Initialize Supabase client
+    const supabaseUrl = 'https://glplnybcdgbyajdgzjrr.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdieWFqZGd6anJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMjMxOTQsImV4cCI6MjA3MDY5OTE5NH0.w8h4GWoJ1oOsxEAsol2Y3P5d6cmI46RoE4rs0iFFcoY';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    
     document.getElementById('contact-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -101,30 +108,21 @@
                 subject: 'New Contact Form Submission'
             };
             
-            // Send email using the Supabase function
-            const response = await fetch('https://glplnybcdgbyajdgzjrr.functions.supabase.co/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdieWFqZGd6anJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMjMxOTQsImV4cCI6MjA3MDY5OTE5NH0.w8h4GWoJ1oOsxEAsol2Y3P5d6cmI46RoE4rs0iFFcoY'
-                },
-                body: JSON.stringify(formData)
+            // Call Supabase function
+            const { data, error } = await supabase.functions.invoke('send-email', {
+                body: formData
             });
             
-            const result = await response.json();
+            if (error) throw error;
             
-            if (response.ok) {
-                // Show success message
-                statusDiv.style.display = 'block';
-                statusDiv.style.backgroundColor = '#d4edda';
-                statusDiv.style.color = '#155724';
-                statusDiv.textContent = 'Thank you! Your message has been sent. We\'ll get back to you shortly.';
-                
-                // Reset form
-                this.reset();
-            } else {
-                throw new Error(result.error || 'Failed to send message');
-            }
+            // Show success message
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = '#d4edda';
+            statusDiv.style.color = '#155724';
+            statusDiv.textContent = 'Thank you! Your message has been sent. We\'ll get back to you shortly.';
+            
+            // Reset form
+            this.reset();
         } catch (error) {
             console.error('Error sending message:', error);
             statusDiv.style.display = 'block';
@@ -145,9 +143,9 @@
     </script>
   </main>
 
-  <footer>
+  <footer><div style="text-align: center;">
     © 2025 SoftAIDev
-  </footer>
+  <br><a href="privacy-policy.html" style="color: #1a237e; text-decoration: underline;">Privacy Policy</a></div></footer>
     
     <!-- Add image handler script -->
     <script src="js/image-handler.js" defer></script>
