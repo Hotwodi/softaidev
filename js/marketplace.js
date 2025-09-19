@@ -19,14 +19,47 @@ const closeBtn = document.querySelector('.close-btn');
 let apps = [];
 
 // Initialize the app
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await fetchApps();
-        renderApps(apps);
-        setupEventListeners();
-    } catch (error) {
-        console.error('Error initializing app:', error);
-        appGrid.innerHTML = '<div class="error-message">Failed to load apps. Please try again later.</div>';
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check for download parameter (PayPal return)
+    const urlParams = new URLSearchParams(window.location.search);
+    const downloadAppId = urlParams.get('download');
+    
+    if (downloadAppId) {
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading-overlay';
+        loadingDiv.innerHTML = '<div class="loading-message">Preparing your download...</div>';
+        document.body.appendChild(loadingDiv);
+        
+        try {
+            // Get download URL
+            const { data: downloadUrl, error } = await supabase.functions
+                .invoke('get-download-url', {
+                    body: { app_id: downloadAppId }
+                });
+            
+            if (error) throw error;
+            
+            // Start download automatically
+            window.location.href = downloadUrl;
+            
+            // Show success message
+            loadingDiv.innerHTML = '<div class="loading-message success">Your download has started! You can find this app in your downloads folder.</div>';
+            setTimeout(() => loadingDiv.remove(), 5000);
+        } catch (error) {
+            console.error('Download error:', error);
+            loadingDiv.innerHTML = '<div class="loading-message error">There was an error preparing your download. Please try the download button on the app card.</div>';
+            setTimeout(() => loadingDiv.remove(), 5000);
+        }
+    } else {
+        try {
+            await fetchApps();
+            renderApps(apps);
+            setupEventListeners();
+        } catch (error) {
+            console.error('Error initializing app:', error);
+            appGrid.innerHTML = '<div class="error-message">Failed to load apps. Please try again later.</div>';
+        }
     }
 });
 

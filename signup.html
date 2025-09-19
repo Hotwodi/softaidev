@@ -82,8 +82,12 @@
                 <input type="text" id="username" required minlength="3">
             </div>
             <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" required>
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
@@ -107,13 +111,14 @@
             e.preventDefault();
             
             const username = document.getElementById('username').value;
-            const fullName = document.getElementById('fullName').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('errorMessage');
             
             try {
-                const { data, error } = await signUp(email, password, username, fullName);
+                const { data, error } = await signUp(email, password, username, firstName, lastName);
                 
                 if (error) throw error;
                 

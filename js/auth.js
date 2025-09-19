@@ -1,10 +1,8 @@
 // auth.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
-const supabase = createClient(
-  'https://glplnybcdgbyajdgzjrr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGxueWJjZGdi...'
-);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Check if user is logged in
 export async function checkAuth() {
@@ -13,17 +11,38 @@ export async function checkAuth() {
 }
 
 // Sign up new user
-export async function signUp(email, password, username, fullName) {
+export async function signUp(email, password, username, firstName, lastName) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         username,
-        full_name: fullName
+        first_name: firstName,
+        last_name: lastName,
+        full_name: `${firstName} ${lastName}`
       }
     }
   });
+
+  if (data?.user) {
+    // Also update the profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert({
+        id: data.user.id,
+        first_name: firstName,
+        last_name: lastName,
+        full_name: `${firstName} ${lastName}`,
+        updated_at: new Date().toISOString()
+      });
+
+    if (profileError) {
+      console.error('Error updating profile:', profileError);
+      return { data, error: profileError };
+    }
+  }
+
   return { data, error };
 }
 
