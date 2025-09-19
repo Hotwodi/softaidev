@@ -1,25 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tutankaten Market Place - Discover and download apps for your device">
-    <title>Tutankaten Market Place</title>
-    <!-- Preconnect to external domains for performance -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://images.unsplash.com">
-    <link rel="preconnect" href="https://glplnybcdgbyajdgzjrr.supabase.co">
-    <!-- Preload critical resources -->
-    <link rel="preload" href="js/marketplace.js" as="script" type="module">
-    <link rel="preload" href="css/marketplace.css" as="style">
-    <!-- Fonts and styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/marketplace.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tutankaten Market Place — Text Catalog</title>
+  <style>
+    :root{--bg:#fff;--accent:#1a237e;--muted:#666}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#111;margin:0;padding:2rem}
+    .wrap{max-width:900px;margin:0 auto}
+    h1{text-align:center;color:var(--accent)}
+    .carousel{position:relative;overflow:hidden;border-radius:10px;border:1px solid #eee;padding:1rem;margin-top:1.5rem}
+    .slide{display:none;padding:1rem}
+    .slide.active{display:block}
+    .meta{color:var(--muted);font-size:0.95rem;margin-bottom:0.6rem}
+    .controls{display:flex;justify-content:center;gap:0.5rem;margin-top:1rem}
+    button{background:var(--accent);color:#fff;border:none;padding:.6rem 1rem;border-radius:6px;cursor:pointer}
+    button.secondary{background:#eee;color:#111}
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <h1>Tutankaten Market Place — Catalog (Text Only)</h1>
+    <p style="text-align:center;color:#555;">This stripped-down marketplace intentionally hides images so you can test which graphic caused the issue. Use the controls to step through products or autoplay.</p>
+
+    <div class="carousel" id="carousel">
+      <!-- Slides injected by JS -->
+    </div>
+
+    <div class="controls">
+      <button id="prev">◀ Previous</button>
+      <button id="toggle">Start</button>
+      <button id="next">Next ▶</button>
+    </div>
+  </div>
+
+  <script>
+    // Sample product data (no images)
+    const products = [
+      {id:1,name:'Ancient Notes DAW',category:'daw',price:0.00,downloads:1234,description:'A compact DAW inspired by ancient rhythms.'},
+      {id:2,name:'Pharaoh Tasks',category:'productivity',price:1.99,downloads:432,description:'A task manager with hieroglyph-inspired UI.'},
+      {id:3,name:'Sands Runner',category:'game',price:0.99,downloads:8901,description:'Endless runner across the dunes.'},
+      {id:4,name:'Pyramid Tools',category:'utility',price:2.99,downloads:210,description:'Utilities for system tuning and backup.'}
+    ];
+
+    const carousel = document.getElementById('carousel');
+    products.forEach(p=>{
+      const s = document.createElement('div'); s.className='slide'; s.id='slide-'+p.id;
+      s.innerHTML = `<div class="meta">${p.category.toUpperCase()} • $${p.price.toFixed(2)} • ${p.downloads} downloads</div><h2>${p.name}</h2><p>${p.description}</p>`;
+      carousel.appendChild(s);
+    });
+
+    let index=0, timer=null, playing=false;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    function show(i){ slides.forEach(s=>s.classList.remove('active')); slides[i].classList.add('active'); }
+    function next(){ index=(index+1)%slides.length; show(index); }
+    function prev(){ index=(index-1+slides.length)%slides.length; show(index); }
+    document.getElementById('next').onclick = ()=>{ stop(); next(); };
+    document.getElementById('prev').onclick = ()=>{ stop(); prev(); };
+    document.getElementById('toggle').onclick = ()=>{ playing?stop():play(); };
+    function play(){ playing=true; document.getElementById('toggle').textContent='Stop'; timer=setInterval(next,3000); }
+    function stop(){ playing=false; document.getElementById('toggle').textContent='Start'; if(timer){clearInterval(timer);timer=null;} }
+
+    // Initialize
+    if(slides.length>0) show(0);
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutankaten Market Place</title>
+    <link rel="stylesheet" href="css/marketplace.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="marketplace-header">
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-to-content">Skip to content</a>
     
@@ -27,30 +85,31 @@
     
     <header class="marketplace-header" role="banner">
         <div class="header-content">
-            <h1><i class="fas fa-ankh" aria-hidden="true"></i> Tutankaten Market Place</h1>
+            <h1><i class="fas fa-ankh"></i> Tutankaten Market Place</h1>
             <p>Discover Ancient Treasures for Your Device</p>
         </div>
         <!-- Internal page navigation removed to focus on hero and marketplace listing -->
     </header>
 
+    <div class="container">
     <!-- Rolling Security Banner removed -->
 
     <main id="main-content" class="container" role="main">
         <div class="search-filter-bar">
             <div class="search-box">
-                <label for="searchInput" class="sr-only">Search applications</label>
-                <input type="text" id="searchInput" placeholder="Search apps..." aria-label="Search applications">
-                <button type="button" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></button>
+                <input type="text" id="searchInput" placeholder="Search apps...">
+                <button><i class="fas fa-search"></i></button>
             </div>
             <div class="filter-controls">
-                <label for="categoryFilter" class="sr-only">Filter by category</label>
-                <select id="categoryFilter" aria-label="Filter by category">
+                <select id="categoryFilter">
                     <option value="">All Categories</option>
                     <option value="daw">DAWs</option>
                     <option value="productivity">Productivity</option>
                     <option value="game">Games</option>
                     <option value="utility">Utilities</option>
                 </select>
+                <select id="sortBy">
+                    <option value="newest">Newest First</option>
                 <label for="priceMin" class="sr-only">Minimum price</label>
                 <input type="number" id="priceMin" placeholder="Min $" min="0" step="0.01" aria-label="Minimum price">
                 <label for="priceMax" class="sr-only">Maximum price</label>
@@ -66,48 +125,48 @@
             </div>
         </div>
 
-        <div class="app-grid" id="appGrid" role="list" aria-label="Available applications">
+        <div class="app-grid" id="appGrid">
             <!-- App cards will be dynamically inserted here -->
         </div>
-    </main>
+    </div>
 
     <!-- App Details Modal -->
-    <div class="modal" id="appModal" role="dialog" aria-labelledby="appModalTitle" aria-hidden="true" tabindex="-1">
-        <div class="modal-content" role="document">
-            <button class="close-btn" aria-label="Close dialog">&times;</button>
+    <div class="modal" id="appModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
             <div class="modal-body">
                 <div class="app-details">
                     <div class="app-header">
-                        <img src="" alt="" class="app-icon-large">
+                        <img src="" alt="App Icon" class="app-icon-large">
                         <div class="app-info">
-                            <h2 class="app-title" id="appModalTitle"></h2>
+                            <h2 class="app-title"></h2>
                             <div class="app-meta">
                                 <span class="version"></span>
                                 <span class="category"></span>
-                                <div class="rating" aria-label="App rating">
-                                    <i class="fas fa-star" aria-hidden="true"></i>
-                                    <i class="fas fa-star" aria-hidden="true"></i>
-                                    <i class="fas fa-star" aria-hidden="true"></i>
-                                    <i class="fas fa-star" aria-hidden="true"></i>
-                                    <i class="far fa-star" aria-hidden="true"></i>
-                                    <span class="rating-count" aria-label="24 ratings">(24)</span>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="rating-count">(24)</span>
                                 </div>
                             </div>
                         </div>
-                        <button class="download-btn" aria-label="Download application">Download APK</button>
+                        <button class="download-btn">Download APK</button>
                     </div>
-                    <div class="app-screenshots" aria-label="Application screenshots">
+                    <div class="app-screenshots">
                         <div class="screenshot">
-                            <img src="" alt="Application screenshot 1" loading="lazy">
+                            <img src="" alt="Screenshot 1">
                         </div>
                         <div class="screenshot">
-                            <img src="" alt="Application screenshot 2" loading="lazy">
+                            <img src="" alt="Screenshot 2">
                         </div>
                     </div>
-                    <div class="app-description" aria-label="Application description"></div>
+                    <div class="app-description"></div>
                     <div class="app-permissions">
-                        <h3 id="permissions-heading">Permissions Required</h3>
-                        <ul class="permissions-list" aria-labelledby="permissions-heading"></ul>
+                        <h3>Permissions Required</h3>
+                        <ul class="permissions-list"></ul>
                     </div>
                 </div>
             </div>
@@ -159,6 +218,20 @@
     <link rel="stylesheet" href="css/home-button.css">
 <!-- Load scripts with defer to improve page load performance -->
     <script src="js/supabase-config.js" type="module"></script>
+    <footer class="marketplace-footer">
+        <div class="security-note">
+            <i class="fas fa-shield-alt"></i>
+            <p>All APKs are scanned for security. Please ensure you have "Unknown Sources" enabled in your device settings to install these applications.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#">About Us</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact</a>
+        </div>
+        <p class="copyright">&copy; 2025 Tutankaten Market Place. All rights reserved.</p>
+    </footer>
+
     <script src="js/marketplace.js"></script>
     <script>
     // Modal accessibility improvements
