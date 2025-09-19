@@ -5,6 +5,8 @@ const appGrid = document.getElementById('appGrid');
 const searchInput = document.getElementById('searchInput');
 const categoryFilter = document.getElementById('categoryFilter');
 const sortBy = document.getElementById('sortBy');
+const priceMinInput = document.getElementById('priceMin');
+const priceMaxInput = document.getElementById('priceMax');
 const modal = document.getElementById('appModal');
 const closeBtn = document.querySelector('.close-btn');
 
@@ -15,8 +17,10 @@ let apps = [];
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await fetchApps();
-        renderApps(apps);
         setupEventListeners();
+        // Default sort: Price High to Low
+        if (sortBy) sortBy.value = 'price_desc';
+        filterAndSortApps();
     } catch (error) {
         console.error('Error initializing app:', error);
         appGrid.innerHTML = '<div class="error-message">Failed to load apps. Please try again later.</div>';
@@ -167,6 +171,8 @@ function filterAndSortApps() {
     const searchTerm = searchInput.value.toLowerCase();
     const selectedCategory = categoryFilter.value;
     const sortMethod = sortBy.value;
+    const minPrice = priceMinInput && priceMinInput.value !== '' ? parseFloat(priceMinInput.value) : null;
+    const maxPrice = priceMaxInput && priceMaxInput.value !== '' ? parseFloat(priceMaxInput.value) : null;
     
     let filteredApps = [...apps];
     
@@ -183,16 +189,28 @@ function filterAndSortApps() {
     if (selectedCategory) {
         filteredApps = filteredApps.filter(app => app.category === selectedCategory);
     }
+
+    // Filter by price range
+    if (minPrice !== null) {
+        filteredApps = filteredApps.filter(app => parseFloat(app.price || 0) >= minPrice);
+    }
+    if (maxPrice !== null) {
+        filteredApps = filteredApps.filter(app => parseFloat(app.price || 0) <= maxPrice);
+    }
     
     // Sort apps
     filteredApps.sort((a, b) => {
         switch(sortMethod) {
+            case 'price_desc':
+                return parseFloat(b.price || 0) - parseFloat(a.price || 0);
+            case 'price_asc':
+                return parseFloat(a.price || 0) - parseFloat(b.price || 0);
             case 'newest':
-                return new Date(b.updated) - new Date(a.updated);
+                return new Date(b.updated || b.created_at || 0) - new Date(a.updated || a.created_at || 0);
             case 'popular':
-                return parseDownloads(b.download_count) - parseDownloads(a.download_count);
+                return parseDownloads(b.download_count || '0') - parseDownloads(a.download_count || '0');
             case 'name':
-                return a.name.localeCompare(b.name);
+                return (a.name || '').localeCompare(b.name || '');
             default:
                 return 0;
         }
@@ -239,6 +257,10 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Price range listeners
+    if (priceMinInput) priceMinInput.addEventListener('input', debounce(filterAndSortApps, 300));
+    if (priceMaxInput) priceMaxInput.addEventListener('input', debounce(filterAndSortApps, 300));
 }
 
 // Handle PayPal payment

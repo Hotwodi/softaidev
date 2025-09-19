@@ -23,26 +23,17 @@
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-to-content">Skip to content</a>
     
-    <!-- Decorative background images with appropriate ARIA attributes -->
-    <img class="decor-pyramids" src="https://images.unsplash.com/photo-1542556391-0f2b4aa1b8f5?auto=format&fit=crop&w=1200&q=80" alt="" aria-hidden="true" loading="lazy" />
-    <img class="decor-sphinx-center" src="https://images.unsplash.com/photo-1544986581-efac024faf62?auto=format&fit=crop&w=1200&q=80" alt="" aria-hidden="true" loading="lazy" />
+    <!-- Decorative background images removed as requested -->
     
     <header class="marketplace-header" role="banner">
         <div class="header-content">
             <h1><i class="fas fa-ankh" aria-hidden="true"></i> Tutankaten Market Place</h1>
             <p>Discover Ancient Treasures for Your Device</p>
         </div>
-        <nav class="main-nav" role="navigation" aria-label="Main Navigation">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="services.html" class="nav-link">Services</a>
-            <a href="blog.html" class="nav-link">Blog</a>
-            <a href="contact.html" class="nav-link">Contact</a>
-            <a href="admin-login.html" class="nav-link">Admin</a>
-        </nav>
+        <!-- Internal page navigation removed to focus on hero and marketplace listing -->
     </header>
 
-    <!-- Rolling Security Banner -->
-    <div class="rolling-banner" id="securityBanner" aria-live="polite" role="status"></div>
+    <!-- Rolling Security Banner removed -->
 
     <main id="main-content" class="container" role="main">
         <div class="search-filter-bar">
@@ -60,9 +51,15 @@
                     <option value="game">Games</option>
                     <option value="utility">Utilities</option>
                 </select>
+                <label for="priceMin" class="sr-only">Minimum price</label>
+                <input type="number" id="priceMin" placeholder="Min $" min="0" step="0.01" aria-label="Minimum price">
+                <label for="priceMax" class="sr-only">Maximum price</label>
+                <input type="number" id="priceMax" placeholder="Max $" min="0" step="0.01" aria-label="Maximum price">
                 <label for="sortBy" class="sr-only">Sort results</label>
                 <select id="sortBy" aria-label="Sort results">
-                    <option value="newest">Newest First</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="newest">Newest</option>
                     <option value="popular">Most Popular</option>
                     <option value="name">A to Z</option>
                 </select>
@@ -117,19 +114,7 @@
         </div>
     </div>
 
-    <footer class="marketplace-footer" role="contentinfo"><div style="text-align: center;">
-        <div class="security-note">
-            <i class="fas fa-shield-alt" aria-hidden="true"></i>
-            <p>All APKs are scanned for security. Please ensure you have "Unknown Sources" enabled in your device settings to install these applications.</p>
-        </div>
-        <nav class="footer-links" aria-label="Footer Navigation">
-            <a href="#">About Us</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Contact</a>
-        </nav>
-        <p class="copyright">&copy; 2025 Tutankaten Market Place. All rights reserved.</p>
-    <br><a href="privacy-policy.html" style="color: #1a237e; text-decoration: underline;">Privacy Policy</a></div></footer>
+    <!-- Footer removed on request -->
 
     <!-- Add screen reader only styles -->
     <style>
@@ -176,29 +161,8 @@
     <script src="js/supabase-config.js" type="module"></script>
     <script src="js/marketplace.js"></script>
     <script>
-    // Initialize rolling security banner via JS
+    // Modal accessibility improvements
     document.addEventListener('DOMContentLoaded', function() {
-        const banner = document.getElementById('securityBanner');
-        if (!banner) return;
-
-        const messages = [
-            'All APKs are scanned for security. Please ensure you have "Unknown Sources" enabled in your device settings to install these applications.'
-        ];
-
-        const track = document.createElement('div');
-        track.className = 'banner-track';
-
-        // Build repeated content for seamless scroll
-        const itemText = ' 👉 ' + messages[0] + ' ';
-        for (let i = 0; i < 6; i++) {
-            const span = document.createElement('span');
-            span.className = 'banner-item';
-            span.textContent = itemText;
-            track.appendChild(span);
-        }
-        banner.appendChild(track);
-        
-        // Modal accessibility improvements
         const modal = document.getElementById('appModal');
         const closeBtn = modal.querySelector('.close-btn');
         
