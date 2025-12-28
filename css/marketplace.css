@@ -98,6 +98,23 @@ body {
     opacity: 0.9;
 }
 
+.crm-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: var(--transition);
+}
+
+.crm-link:hover {
+    background: var(--secondary-color);
+    color: var(--text-light);
+}
+
 /* Search & Filter Bar */
 .search-filter-bar {
     background: rgba(255, 255, 255, 0.9);
